@@ -3,6 +3,7 @@ import styles from "./items-page.module.css";
 import Link from "next/link";
 
 import Entry from "@/components/entry/Entry"; 
+import JSONEditor from "@/components/JSONEditor/JSONEditor";
 
 /* 
 key: filename, value: string object
@@ -18,7 +19,7 @@ to-do:
 // sample data - todo: pull from aws and load
 const items = [
     {
-        "filename": "filename1", 
+        "filename": "filasdaename1", 
             "body": JSON.stringify({
             "src": "Images/Sun1.png", 
             "name": "sun1",
@@ -26,7 +27,7 @@ const items = [
         })
     },
     {
-        "filename": "filename2", 
+        "filename": "123456789012345678901234567890", 
             "body": JSON.stringify({
             "src": "Images/Sun2.png", 
             "name": "sun2",
@@ -45,16 +46,16 @@ const items = [
 
 const ItemsPage = () => {
 
-    console.log("\n" + "items[1].filename: " + items[1].filename);
-    console.log("typeof items[1].filename: " + typeof(items[1].filename));
+    // console.log("\n" + "items[1].filename: " + items[1].filename);
+    // console.log("typeof items[1].filename: " + typeof(items[1].filename));
 
-    const test_str = JSON.stringify(items[1].filename);
-    console.log("\n" + "test_str: " + test_str);
-    console.log("typeof test_str: " + typeof(test_str));
+    // const test_str = JSON.stringify(items[1].filename);
+    // console.log("\n" + "test_str: " + test_str);
+    // console.log("typeof test_str: " + typeof(test_str));
 
-    const test_obj = JSON.stringify(items[1]);
-    console.log("\n" + "test_obj: " + test_obj);
-    console.log("typeof test_obj: " + typeof(test_obj));
+    // const test_obj = JSON.stringify(items[1]);
+    // console.log("\n" + "test_obj: " + test_obj);
+    // console.log("typeof test_obj: " + typeof(test_obj));
 
     return(
         // to-do: move styles.container into globals.css
@@ -70,6 +71,10 @@ const ItemsPage = () => {
                 )}
 
             </div>
+            
+
+            <JSONEditor/>
+
         </div>
     );
 }

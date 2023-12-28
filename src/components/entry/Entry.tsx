@@ -5,10 +5,12 @@ import styles from "./Entry.module.css";
 import Image from "next/image";
 
 // refs
-import EditJSONButton from "./EditJSONButton";
+import Buttons from "./Buttons";
+import Button from "../button/Button";
 
 // icons
 import icon_file from "../../../public/icon_file.png";
+import icon_trash from "../../../public/icon_delete.png";
 
 // jsx object/element that handles entry row on page
 // onclick - opens up new panel to edit json
@@ -27,24 +29,39 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
             // to contain: file symbol, name, edit button on hover
             <div className = {styles.entry_container}>
 
-                <Image
-                    src = {icon_file}
-                    alt = "file_icon.png"
-                    width = {40}
-                />
+                <div className = {styles.file}>
 
-                <p>{parsed_obj.filename}</p>
+                    <Image
+                        src = {icon_file}
+                        alt = "file_icon.png"
+                        width = {40}
+                    />
 
-                <EditJSONButton/>
+                    <p>{parsed_obj.filename}</p>
+                </div>
+
+                <div className = {styles.edit_trash_buttons}>
+
+                    <Button text = "Edit"/>
+
+                    <div className = {styles.trash_button}>
+                        <Image
+                            src = {icon_trash}
+                            alt = "icon_trash"
+                            width = {30}
+                        />
+                    </div>
+                </div>
 
             </div>
+            // end - {entry.metadata}
+
         );
 
     } catch(error) {
         console.log("ERROR");
         return <p>Error: {error?.message ?? JSON.stringify(error)}</p>
     }
-
 }
 
 export default Entry;

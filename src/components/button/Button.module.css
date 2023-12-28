@@ -1,0 +1,26 @@
+.button_container{
+    background-color: #4169E1;
+    width: auto;
+    height: 40px;
+    border-radius: 10px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 15px;
+    padding-right: 15px;
+
+    border-color: black;
+    border-width: 1.5px;
+
+    /* for text*/
+    justify-content: center;
+    align-items: center;
+
+    color: black;
+    text-align: center;
+    font-weight: 650;
+    font-size: 15px;
+}
+
+.button_container:hover{
+    cursor: pointer;
+}
