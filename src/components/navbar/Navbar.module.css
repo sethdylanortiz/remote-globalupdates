@@ -1,0 +1,19 @@
+.container{
+    background-color: #3E3332;
+    height: 75px;
+    width: 100%;
+    padding-left: 50px;
+
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+
+    text-align: center;
+    align-items: center;
+}
+
+.header_name{
+    color: white;
+    font-weight: 600;
+    font-size: 30px;
+}
