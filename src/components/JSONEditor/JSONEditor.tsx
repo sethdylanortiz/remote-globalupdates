@@ -29,7 +29,8 @@ const JSONEditor = () => {
                 defaultLanguage = "json"
                 defaultValue = {JSON.stringify(sample, null, 4)}
             />
-            <Button text = "Save changes"/>
+            <Button text = "SAVE" color = "blue"/>
+            <Button text = "CLOSE" color = "grey"/>
         </div>
     )
 

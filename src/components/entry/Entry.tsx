@@ -42,7 +42,7 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
                 <div className = {styles.edit_trash_buttons}>
 
-                    <Button text = "Edit"/>
+                    <Button text = "Edit" color = "blue"/>
 
                     <div className = {styles.trash_button}>
                         <Image
