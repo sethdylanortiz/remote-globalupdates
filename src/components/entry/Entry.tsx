@@ -5,7 +5,6 @@ import styles from "./Entry.module.css";
 import Image from "next/image";
 
 // refs
-import Buttons from "./Buttons";
 import Button from "../button/Button";
 
 // icons
@@ -19,11 +18,11 @@ import icon_trash from "../../../public/icon_delete.png";
 const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
     try {
-        console.log("-------------------");
+        // console.log("-------------------");
         const parsed_obj = JSON.parse(obj_str);
-        console.log("obj_str: " + obj_str);
-        console.log("parsed_obj: " + parsed_obj);
-        console.log("parsed_obj.filename: " + parsed_obj.filename);
+        // console.log("obj_str: " + obj_str);
+        // console.log("parsed_obj: " + parsed_obj);
+        // console.log("parsed_obj.filename: " + parsed_obj.filename);
 
         return(
             // to contain: file symbol, name, edit button on hover

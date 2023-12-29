@@ -21,16 +21,18 @@ const getColor = ({color}: {color: string}) => {
 }
 
 // add href, logo if exists?, where to add onclick?
-const Button = ({text, color}: {text: string, color: string}):JSX.Element => {
+const Button = ({text, color, handleClick}: {text: string, color: string, handleClick: any}):JSX.Element => {
 
     return(
-        <div 
+        <button
         className = {styles.button_container}
         style = {{
             backgroundColor: getColor({color})
-        }}>
+        }}
+        onClick = {handleClick}
+        >
             {text}
-        </div>
+        </button>
     );
 }
 

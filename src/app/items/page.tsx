@@ -1,10 +1,3 @@
-import React from "react";
-import styles from "./items-page.module.css";
-import Link from "next/link";
-
-import Entry from "@/components/entry/Entry"; 
-import JSONEditor from "@/components/JSONEditor/JSONEditor";
-
 /* 
 key: filename, value: string object
 
@@ -15,6 +8,15 @@ to-do:
 - on change submit - push to dev database and overwrite cache
 - on merge tab, show all changes from current dev version agaisnt production version
 */
+
+import React from "react";
+import styles from "./items-page.module.css";
+
+import Entry from "@/components/entry/Entry"; 
+import JSONEditor from "@/components/JSONEditor/JSONEditor";
+
+// database calling
+import fetch from 'node-fetch';
 
 // sample data - todo: pull from aws and load
 const items = [
@@ -33,29 +35,49 @@ const items = [
             "name": "sun2",
             "hOffset": 200
         })
-    },
-    {
-        "filename": "filename3", 
-            "body": JSON.stringify({
-            "src": "Images/Sun3.png", 
-            "name": "sun3",
-            "hOffset": 300
-        })
     }
 ];
 
-const ItemsPage = () => {
 
-    // console.log("\n" + "items[1].filename: " + items[1].filename);
-    // console.log("typeof items[1].filename: " + typeof(items[1].filename));
 
-    // const test_str = JSON.stringify(items[1].filename);
-    // console.log("\n" + "test_str: " + test_str);
-    // console.log("typeof test_str: " + typeof(test_str));
+const ItemsPage = async() => {
 
-    // const test_obj = JSON.stringify(items[1]);
-    // console.log("\n" + "test_obj: " + test_obj);
-    // console.log("typeof test_obj: " + typeof(test_obj));
+    const getEntryData = async() => {
+    
+        // add try-catch
+        const response_obj = await fetch("http://localhost:3000/api/getEntries", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+        });
+
+
+        console.log("\n" + "page.tsx getEntryData() response_obj: " + response_obj);
+        return response_obj;
+        // add to set vars - global
+    }
+
+    // on page load
+    const testing_ret_obj = await getEntryData();
+    const {entries_obj}: any = await testing_ret_obj.json();
+
+    // console.log(entries_obj.Items);
+    // console.log("page.tsx entries_obj.Items[0].entry: \n" + entries_obj.Items[0].entry);
+    // console.log("page.tsx entries_obj.Items[1].entry: \n" + entries_obj.Items[1].entry);
+    // console.log("page.tsx entries_obj.Items[2].entry: \n" + entries_obj.Items[2].entry);
+    
+
+    // method 2 - 
+
+    // method 1 - parse then stringify
+    // console.log("\n\n---------------------");
+    // let items_0 = entries_obj.Items[2].entry;
+    // console.log(items_0);
+    // items_0 = JSON.parse(items_0);
+    // console.log(items_0);
+    // items_0 = JSON.stringify(items_0, null, 4); // to remove whitespace/format
+    // console.log(items_0);
 
     return(
         // to-do: move styles.container into globals.css
@@ -72,8 +94,10 @@ const ItemsPage = () => {
 
             </div>
             
-
-            <JSONEditor/>
+            {/* edit to create JSONEditor on Entry press - add onClick to <Entry>, pass in values */}
+            <JSONEditor filename = {entries_obj.Items[0].FileName} entry = {entries_obj.Items[0].entry}/>
+            <JSONEditor filename = {entries_obj.Items[1].FileName} entry = {entries_obj.Items[1].entry}/>
+            <JSONEditor filename = {entries_obj.Items[2].FileName} entry = {entries_obj.Items[2].entry}/>
 
         </div>
     );
