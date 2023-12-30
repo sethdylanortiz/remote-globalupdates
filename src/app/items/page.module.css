@@ -1,9 +1,9 @@
 /* change to globals.css */
 /* to emulate maxwidthwrapper */
 .container{
-    background-color: pink;
+    background-color: #FEE2FF;
 
-    max-width: 1280px;
+    /* max-width: 1280px; */
     width: 100%;
 
     margin-left: auto;

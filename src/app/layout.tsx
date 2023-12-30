@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { cn } from '@/lib/utils'
 
 // components
 import Navbar from '@/components/navbar/Navbar';
 
 // styling
 import "./globals.css";
+import styles from ""
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,26 +23,15 @@ export default function RootLayout({
   return (
     <html lang="en" className = "h-full">
 
-        {/* joint classname - classname for font/ classname for styles */}
-        {/* cn() allows us to use conditional classnames */}
-        <body className = {cn("relative h-full font-sans antialiased", inter.className)}>
+        <body className = "h-full font-sans">
 
-            {/* this makes sure that the page never looks weird (only taking half the page, working with footer) */}
-            <main className = "relative flex flex-col min-h-screen">
+            <main className = "min-h-screen">
 
                 <Navbar/>
-
-                {/* this ensures that the children fill up as much content as they can */}
-                <div className = "flex-grow flex-1">
-
                     {children}
-                
-                </div>
 
             </main>
-
         </body>
-
     </html>
   )
 }
