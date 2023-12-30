@@ -6,6 +6,7 @@ import Navbar from '@/components/navbar/Navbar';
 
 // styling
 import "./globals.css";
+import styles from ""
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,19 +23,15 @@ export default function RootLayout({
   return (
     <html lang="en" className = "h-full">
 
-        <body className = "relative h-full font-sans antialiased">
+        <body className = "h-full font-sans">
 
-            <main className = "relative flex flex-col min-h-screen">
+            <main className = "min-h-screen">
 
                 <Navbar/>
-                <div className = "flex-grow flex-1">
                     {children}
-                </div>
 
             </main>
-
         </body>
-
     </html>
   )
 }

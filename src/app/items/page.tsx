@@ -10,7 +10,7 @@ to-do:
 */
 
 import React from "react";
-import styles from "./items-page.module.css";
+import styles from "./page.module.css";
 
 import Entry from "@/components/entry/Entry"; 
 import JSONEditor from "@/components/JSONEditor/JSONEditor";
@@ -38,8 +38,6 @@ const items = [
     }
 ];
 
-
-
 const ItemsPage = async() => {
 
     const getEntryData = async() => {
@@ -52,32 +50,17 @@ const ItemsPage = async() => {
                 }
         });
 
-
-        console.log("\n" + "page.tsx getEntryData() response_obj: " + response_obj);
-        return response_obj;
+        // console.log("\n" + "page.tsx getEntryData() response_obj: " + response_obj);
         // add to set vars - global
+        return response_obj;
     }
 
     // on page load
     const testing_ret_obj = await getEntryData();
     const {entries_obj}: any = await testing_ret_obj.json();
-
-    // console.log(entries_obj.Items);
-    // console.log("page.tsx entries_obj.Items[0].entry: \n" + entries_obj.Items[0].entry);
-    // console.log("page.tsx entries_obj.Items[1].entry: \n" + entries_obj.Items[1].entry);
-    // console.log("page.tsx entries_obj.Items[2].entry: \n" + entries_obj.Items[2].entry);
+    // console.log("page.tsx testing_ret_obj: " + entries_obj);
     
-
-    // method 2 - 
-
-    // method 1 - parse then stringify
-    // console.log("\n\n---------------------");
-    // let items_0 = entries_obj.Items[2].entry;
-    // console.log(items_0);
-    // items_0 = JSON.parse(items_0);
-    // console.log(items_0);
-    // items_0 = JSON.stringify(items_0, null, 4); // to remove whitespace/format
-    // console.log(items_0);
+    // console.log("page.tsx entries_obj.Items[0].entry: \n" + entries_obj.Items[0].entry);
 
     return(
         // to-do: move styles.container into globals.css
@@ -85,22 +68,21 @@ const ItemsPage = async() => {
             <p>All Items</p>
             <div className = {styles.items_container}>
 
-                {items.map(item => 
-                    <Entry
-                        key = {item.filename}
-                        obj_str = {JSON.stringify(item)}
-                    />
-                )}
+                {entries_obj.Items.map((item: any) => 
 
+                        // console.log("\n" + "page.tsx Items.map(), item.FileName: "+ item.FileName);
+                        // console.log("page.tsx Items.map(), item.entry: \n" + item.entry);
+                        // console.log("page.tsx Items.map(), JSON.stringify(item): \n" + JSON.stringify(item));
+                        <Entry
+                            key = {item.FileName}
+                            obj_str = {JSON.stringify(item)}
+                        />
+                )}
+        
             </div>
-            
-            {/* edit to create JSONEditor on Entry press - add onClick to <Entry>, pass in values */}
-            <JSONEditor filename = {entries_obj.Items[0].FileName} entry = {entries_obj.Items[0].entry}/>
-            <JSONEditor filename = {entries_obj.Items[1].FileName} entry = {entries_obj.Items[1].entry}/>
-            <JSONEditor filename = {entries_obj.Items[2].FileName} entry = {entries_obj.Items[2].entry}/>
 
         </div>
-    );
+    )
 }
 
 export default ItemsPage;

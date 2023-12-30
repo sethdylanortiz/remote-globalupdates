@@ -29,14 +29,11 @@ const saveJSON = (input: string) => {
     console.log("saveJSON(), input: \n" + input);
 }
 
-const JSONEditor = ({filename, entry}: {filename: any, entry: any}):JSX.Element => {
+const JSONEditor = ({entry}: {entry: any}):JSX.Element => {
 
-    console.log("inside JSONEditor()");
-    console.log("JSONEditor.tsx FileName: " + JSON.stringify(filename));
-    console.log("JSONEditor.tsx entry: " + JSON.stringify(entry));
-    
-    // try catch here
-    // let form_entry = JSON.parse(entry);
+    // console.log("inside JSONEditor()");
+    // console.log("JSONEditor.tsx entry: " + JSON.stringify(entry));
+    // console.log("JSONEditor.tsx JSON.stringify(JSON.parse(entry), null, 4)): \n" + JSON.stringify(JSON.parse(entry), null, 4));
 
     // save reference the the json editor
     const editorRef = useRef(null);
@@ -48,37 +45,21 @@ const JSONEditor = ({filename, entry}: {filename: any, entry: any}):JSX.Element 
     const getEditorValue = () => {
 
         console.log("\n" + "editorRef.current.getValue(): \n" + editorRef.current.getValue());
+        // instead of printing, return or make call to aws
     }
 
     return(
-        <div className = {styles.editor_container}>
 
-            <div className = {styles.filename_header}> 
-                <p>Current file</p>
-            </div>
+        <Editor
+            className = {styles.editor}
+            height = "75%"
+            width = "90%"
+            theme = "light"
+            defaultLanguage = "json"
+            defaultValue = {JSON.stringify(JSON.parse(entry), null, 4)} // test this with different inputs
+            onMount = {handleEditorDidMount}
+        />
 
-            <textarea
-                className = {styles.filename_textarea} 
-                rows = {2}
-                placeholder = {filename} // change to value, onChange = {handleChange}
-            />
-
-            <Editor
-                className = {styles.editor}
-                height = "75%"
-                width = "90%"
-                theme = "light"
-                defaultLanguage = "json"
-                defaultValue = {JSON.stringify(JSON.parse(entry), null, 4)} // test this with different inputs
-                onMount = {handleEditorDidMount}
-            />
-
-            <div className = {styles.save_close_buttons}>
-                <Button text = "SAVE" color = "blue" handleClick = {() => saveJSON("hi") }/>
-                <Button text = "CLOSE" color = "grey" handleClick = {() => console.log("")}/>
-            </div>
-
-        </div>
     )
 
 }

@@ -1,55 +1,5 @@
-/* todo - change all of the width: 90%'s? */
-.editor_container{
-    display: flex;
-    flex-direction: column;
-    padding-top: 15px;
-    padding-bottom: 10px;
-
-    align-items: center; /* y-axis centering */
-    justify-content: center; /* x-axis centering */
-    gap: 10px;
-
-    width: 100%;
-    height: 600px;
-
-    background-color: #F7F7F7;
-
-    border-width: 1.5px;
-    border-color: black;
-}
-
-.filename_header{
-    width: 90%;
-    text-align: left;
-    color: black;
-}
-
-.filename_textarea{
-    width: 90%;
-    padding-left: 10px;
-    resize: none;
-
-    border-width: 1.5px;
-    border-color: black;
-
-    /* fake centering */
-    padding-top: 1.25%;
-}
-
-.save_close_buttons{
-    display: flex;
-    flex: row;
-    /* background-color: red; */
-    
-    /* padding-top: 10px; */
-    width: 90%;
-    height: auto;
-
-    justify-content: right;
-    gap: 10px;
-}
-
 .editor{
     border-width: 1.5px;
     border-color: black;
+
 }
