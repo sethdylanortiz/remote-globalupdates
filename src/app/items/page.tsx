@@ -68,8 +68,11 @@ const ItemsPage = async() => {
             <p>All Items</p>
             <div className = {styles.items_container}>
 
+                {/* 
+                    todo -  change to another component that handles entire aws obj, do not use .map() here, 
+                            this solves multiple instances of <Entry> - fixes 'EDIT' button issue
+                */}
                 {entries_obj.Items.map((item: any) => 
-
                         // console.log("\n" + "page.tsx Items.map(), item.FileName: "+ item.FileName);
                         // console.log("page.tsx Items.map(), item.entry: \n" + item.entry);
                         // console.log("page.tsx Items.map(), JSON.stringify(item): \n" + JSON.stringify(item));

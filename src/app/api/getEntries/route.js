@@ -7,10 +7,10 @@ export async function GET(){
     console.log("\n\n" + "route.js: inside GET()");
 
     try{
-        const items_obj = await getEntryDB();;
+        const items_obj = await getEntryDB();
 
         return NextResponse.json({
-            responseMsg: ["route.js - success type - getEntryDB()"],
+            responseMsg: ["route.js SUCCESS GET() responseMsg getEntryDB()"],
             entries_obj: items_obj,
 
             success: true,
@@ -18,9 +18,9 @@ export async function GET(){
         });
     }catch(error){
 
-        console.log("route.js - error: " + error);
+        console.log("route.js GET() error: " + error);
         return NextResponse.json({
-            responseMsg: ["route.js - error type - getEntryDB()"],
+            responseMsg: ["route.js ERROR GET() responseMsg getEntryDB()"],
             entries_obj: null,
 
             success: false,
