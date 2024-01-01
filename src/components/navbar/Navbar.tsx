@@ -18,7 +18,7 @@ const Navbar = () => {
                 <Image
                     src = {logo_badpirate}
                     alt = "logo_badpirate"
-                    height = {50}
+                    height = {60}
                 />
             </Link>
 
