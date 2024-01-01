@@ -1,5 +1,5 @@
 // "use server"
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 import { getEntryDB } from "../../lib/dynamodb.js";
 
 export async function GET(){

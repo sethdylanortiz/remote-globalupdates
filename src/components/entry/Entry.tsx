@@ -1,72 +1,63 @@
 "use client";
-
 import React, { useState, useRef } from "react";
 import styles from "./Entry.module.css";
 import Image from "next/image";
 import Button from "../button/Button";
-
-// import JSONEditor from "../JSONEditor/JSONEditor";
 import { Editor } from "@monaco-editor/react";
 
 // icons
 import icon_file from "../../../public/icon_file.png";
 import icon_trash from "../../../public/icon_delete.png";
 
-// const updateForm = async({curFileName, newFileName, curJSON, newJSON} : {curFileName: string, newFileName: string, curJSON: string, newJSON: string}) => {
-const updateForm = async(curFileName: string, newFileName: string, curJSON: string, newJSON: string) => {    
+const updateForm = async(curFileName: string, newFileName: string, curJSON: string, newJSON: string) => {
     console.log("updateForm(), SAVE button pressed");
 
-    // if newFileName == "" or null
-    // make aws call to create a new item with newFileName + newJSON
-    // make aws call to remove curFileName
-    const [curFileName_trim, newFileName_trim] = [curFileName.replace(/\s/g,""), newFileName.replace(/\s/g,"")];
-    if(curFileName_trim !== newFileName_trim)
-    {
-        console.log("updateForm() change in filename, curFileName_trim != newFileName_trim");
-        console.log("updateForm() curFileName_trim: " + curFileName_trim);
-        console.log("updateForm() newFileName_trim: " + newFileName_trim);
-    }
-    else{
-        console.log("updateForm() curJSON == newJSON, ignore call");
-        console.log("updateForm() curFileName_trim: \n" + curFileName_trim);
-        console.log("updateForm() newFileName_trim: \n" + newFileName_trim);
-    }
-
-    // if only newJSON is provided (no need to create a new entry/pk wasn't changed)
-    // make aws call to update 'entry' for specific curFileName
-    // make sure on get() call we format JSON.stringify(str, null , 4);
+    const [curFileName_trim, newFileName_trim] = [curFileName.trim(), newFileName.trim()];
     const [curJSON_trim, newJSON_trim] = [curJSON.replace(/\s/g,""), newJSON.replace(/\s/g,"")];
-    if(curJSON_trim !== newJSON_trim)
+
+    if((curJSON_trim !== newJSON_trim) || (curFileName_trim !== newFileName_trim))
     {
         console.log("updateForm() change in JSON, curJSON_trim !== newJSON_trim");
-
-        // const response_obj = await fetch("http://localhost:3000/api/udpateEntry", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     },
-        //     body: newJSON
-        // });
         
-        // console.log("Entry.tsx repsonse_obj: " + response_obj);
-        // const {success}: any = await response_obj.json(); 
-        // console.log("suceess?: " + success); // return this - true/false
-    }
-    else{
-        console.log("updateForm() curJSON == newJSON, ignore call");
-        console.log("updateForm() curJSON_trim: \n" + curJSON_trim);
-        console.log("updateForm() newJSON_trim: \n" + newJSON_trim);
-        return;
-    }
+        // update/create entry if differences are noticed
+        const response_obj = await fetch("http://localhost:3000/api/updateEntry", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                newFileName: newFileName_trim,
+                newJSON: newJSON_trim
+            })
+        });
 
-    // on success, return notification to overwrite temp str?
+        // delete old entry if new filename was set
+        if(curFileName_trim !== newFileName_trim)
+        {
+            const response_obj = await fetch("http://localhost:3000/api/deleteEntry", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    fileNameToDelete: curFileName_trim
+                })
+            });
+        }
+    }
+    else {
+        console.log("updateForm() curJSON == newJSON, ignore call" + "\n\n" + 
+                    "updateForm() curJSON_trim: \n" + curJSON_trim + "\n\n" + 
+                    "updateForm() newJSON_trim: \n" + newJSON_trim);
+    }
+    // on success, return notification to overwrite/setState temp str?
+    // this must be done since we wont re-call entire db like we do on initial page load
 }
 
 const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
-    // on "edit" button press, pass props: (filename & entry) and display JSONEditor component
+    // todo - fix
     const [showEditor, setShowEditor] = useState(false);
-
 
     // for json <Editor/> component
     const [formJSON, setFormJSON] = useState("");
@@ -74,14 +65,10 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
     const handleEditorDidMount = (editor: any, monaco: any) => {
         editorRef.current = editor;
-
         // getEditorValue();
     }
     const getJSONEditorValue = ():string => {
-
-        // console.log("\n" + "editorRef.current.getValue(): \n" + editorRef.current.getValue());
         return editorRef.current.getValue();
-        // instead of printing, return or make call to aws
     }
 
     try {
@@ -98,7 +85,7 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
                     <Image
                         src = {icon_file}
-                        alt = "file_icon.png"
+                        alt = "icon_file.png"
                         width = {40}
                     />
 
@@ -117,7 +104,7 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
                     <div className = {styles.trash_button}>
                         <Image
                             src = {icon_trash}
-                            alt = "icon_trash"
+                            alt = "icon_trash.png"
                             width = {30}
                         />
                     </div>

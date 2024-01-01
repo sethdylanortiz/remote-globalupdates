@@ -5,7 +5,7 @@
 "use server";
 // aws sdk v3
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ScanCommand} from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ScanCommand, DeleteCommand} from '@aws-sdk/lib-dynamodb';
 
 const database_client = new DynamoDBClient({
     region: process.env.TABLE_REGION,
@@ -36,19 +36,21 @@ const getEntryDB = async() => {
 const updateEntryDB = async(filename, newJSON) => {
     console.log("\n" + "dynamodb.js - inside updateEntryDB()");
     console.log("dynamodb.js - filename: " + filename);
+    console.log("dynamodb.js - typeof filename: " + typeof filename);
     console.log("dynamodb.js - newJSON: " + newJSON);
+    console.log("dynamodb.js - typeof newJSON: " + typeof newJSON);
 
     const params = {
         TableName: process.env.TABLE_NAME_DEVELOPMENT,
         Key: {
             FileName: filename
         },
-        UpdateExpression: "SET FileName = :p",
+        UpdateExpression: "SET entry = :p",
         ExpressionAttributeValues: {
             ":p": newJSON // needs JSON.stringify(newJSON, null, 4)?
         },
-        ReturnValues: `UPDATED_JSON ${filename}` // returns this string on completion
-    }
+        ReturnValues: "ALL_NEW" // returns this string on completion
+    };
 
     // todo - try catch here 
     // https://levelup.gitconnected.com/building-a-next-js-dynamodb-crud-app-4bb2afe0d2f6
@@ -61,4 +63,19 @@ const updateEntryDB = async(filename, newJSON) => {
     return doc_client.send(new UpdateCommand(params));
 }
 
-export { getEntryDB, updateEntryDB }
+const deleteEntryDB = async(filename) => {
+    console.log("\n" + "dynamodb.js - inside deleteEntryDB()");
+    console.log("dynamodb.js - filename: " + filename);
+
+    const params = {
+        TableName: process.env.TABLE_NAME_DEVELOPMENT,
+        Key: {
+            FileName: filename
+        }
+    };
+
+    // todo - try catch here
+    return doc_client.send(new DeleteCommand(params));
+}
+
+export { getEntryDB, updateEntryDB, deleteEntryDB }
