@@ -1,4 +1,14 @@
-.entry_container{
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* x-axis */
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+    gap: 20px;
+}
+
+.entry{
     /* position: relative; */
 
     background-color: white;
@@ -16,9 +26,6 @@
 
     border-color: black;
     border-width: 1.5px;
-
-    margin-top: 10px;
-    margin-bottom: 10px;
 }
 
 .file{
@@ -86,27 +93,31 @@
 .filename_header{
     width: 90%;
     text-align: left;
+    font-weight: 400;
     color: black;
 }
 
 .filename_textarea{
     width: 90%;
     padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     resize: none;
 
     border-width: 1.5px;
     border-color: black;
+}
 
-    /* fake centering */
-    padding-top: 1.35%;
+.editor{
+    border-width: 1.5px;
+    border-color: black;
 }
 
 .save_close_buttons{
     display: flex;
     flex: row;
-    /* background-color: red; */
-    
-    /* padding-top: 10px; */
+
+    padding-top: 5px;
     width: 90%;
     height: auto;
 

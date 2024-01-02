@@ -12,12 +12,12 @@ import React from "react";
 import styles from "./page.module.css";
 import fetch from "node-fetch";
 import Entry from "@/components/entry/Entry"; 
+// todo - add functionality:
 import Button from "@/components/button/Button";
 
 const ItemsPage = async() => {
 
     const getEntryData = async() => {
-    
         // add try-catch
         const response_obj = await fetch("http://localhost:3000/api/getEntries", {
                 method: "GET",
@@ -25,41 +25,26 @@ const ItemsPage = async() => {
                     "Content-Type": "application/json"
                 }
         });
-
-        // console.log("\n" + "page.tsx getEntryData() response_obj: " + response_obj);
-        // add to set vars - global
         return response_obj;
     }
 
     // on page load
     const testing_ret_obj = await getEntryData();
     const {entries_obj}: any = await testing_ret_obj.json();
-    // console.log("page.tsx testing_ret_obj: " + entries_obj);
-    
-    // console.log("page.tsx entries_obj.Items[0].entry: \n" + entries_obj.Items[0].entry);
 
     return(
         // to-do: move styles.container into globals.css
         <div className = {styles.container}>
             
-            <p>All Items</p>
+            <p className = {styles.instruction}>Development configuration - all items</p>
 
             <div className = {styles.items_container}>
 
-                {/* 
-                    todo -  change to another component that handles entire aws obj, do not use .map() here, 
-                            this solves multiple instances of <Entry> - fixes 'EDIT' button issue
-                */}
-                {entries_obj.Items.map((item: any) => 
-                        // console.log("\n" + "page.tsx Items.map(), item.FileName: "+ item.FileName);
-                        // console.log("page.tsx Items.map(), item.entry: \n" + item.entry);
-                        // console.log("page.tsx Items.map(), JSON.stringify(item): \n" + JSON.stringify(item));
-                        <Entry
-                            key = {item.FileName}
-                            obj_str = {JSON.stringify(item)}
-                        />
-                )}
-        
+                {/* pass all items */}
+                <Entry
+                    obj_str = {JSON.stringify(entries_obj.Items)}
+                />
+
             </div>
 
         </div>

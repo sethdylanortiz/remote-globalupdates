@@ -22,3 +22,7 @@
         padding-right: 5rem /* 80px */;
     }
 }
+
+.instruction{
+    font-weight: 600;
+}

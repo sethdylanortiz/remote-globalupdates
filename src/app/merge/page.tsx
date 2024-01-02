@@ -14,7 +14,7 @@ const MergePage = async() => {
 
     return(
         <div className = {styles.container}>
-
+            
         </div>
     );
 }

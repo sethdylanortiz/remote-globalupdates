@@ -18,7 +18,6 @@ const updateForm = async(curFileName: string, newFileName: string, curJSON: stri
     if((curJSON_trim !== newJSON_trim) || (curFileName_trim !== newFileName_trim))
     {
         console.log("updateForm() change in JSON, curJSON_trim !== newJSON_trim");
-        
         // update/create entry if differences are noticed
         const response_obj = await fetch("http://localhost:3000/api/updateEntry", {
             method: "POST",
@@ -30,7 +29,6 @@ const updateForm = async(curFileName: string, newFileName: string, curJSON: stri
                 newJSON: newJSON_trim
             })
         });
-
         // delete old entry if new filename was set
         if(curFileName_trim !== newFileName_trim)
         {
@@ -56,13 +54,16 @@ const updateForm = async(curFileName: string, newFileName: string, curJSON: stri
 
 const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
-    // todo - fix
+    // for editor state
     const [showEditor, setShowEditor] = useState(false);
+
+    // for textarea filename
+    const [filename, setFileName] = useState<any>(null);
+    const [newFileName, setNewFileName] = useState<any>(null);
 
     // for json <Editor/> component
     const [formJSON, setFormJSON] = useState<any>(null); // null or string
     const editorRef = useRef(null);
-
     const handleEditorDidMount = (editor: any, monaco: any) => {
         editorRef.current = editor;
         // getEditorValue();
@@ -74,45 +75,40 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
     try {
         const parsed_obj = JSON.parse(obj_str);
 
-        // for textarea filename
-        const [newFileName, setNewFileName] = useState(parsed_obj.FileName);
-
         return(
-            // to contain: file symbol, name, edit button on hover
-            <div className = {styles.entry_container}>
+            <div className = {styles.container}>
 
-                <div className = {styles.file}>
+                {parsed_obj.map((entry: any) => 
+                    <div className = {styles.entry}>
+                        <div className = {styles.file}>
+                            <Image
+                                src = {icon_file}
+                                alt = "icon_file.png"
+                                width = {40}
+                            />
+                            <p>{entry.FileName}</p>
+                        </div>
 
-                    <Image
-                        src = {icon_file}
-                        alt = "icon_file.png"
-                        width = {40}
-                    />
-
-                    <p>{parsed_obj.FileName}</p>
-                </div>
-
-                <div className = {styles.meta_buttons}>
-
-                    <Button text = "Edit" color = "blue" handleClick = {() => {
-                        
-                        console.log("Edit button clicked");
-                        setShowEditor(!showEditor);
-
-                    }}/>
-                    <div className = {styles.trash_button}>
-                        {/* add button </> tag + funcationality/onClick(), etc. */}
-                        <Image
-                            src = {icon_trash}
-                            alt = "icon_trash.png"
-                            width = {30}
-                        />
+                        <div className = {styles.meta_buttons}>
+                            <Button text = "Edit" color = "blue" handleClick = {() => {
+                                console.log("Edit button clicked");
+                                setFileName(entry.FileName);
+                                setFormJSON(entry.entry);
+                                setShowEditor(!showEditor);
+                            }}/>
+                            <div className = {styles.trash_button}>
+                                <Image
+                                    src = {icon_trash}
+                                    alt = "icon_trash.png"
+                                    width = {30}
+                                />
+                            </div>
+                        </div>
                     </div>
+                )}
 
-                </div>
+                {showEditor === true && (
 
-                {/* move to component/function? */}
-                {showEditor === true ? (
                     <div className = {styles.editor_container}>
 
                         <div className = {styles.filename_header}> 
@@ -121,36 +117,38 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
                         <textarea
                             className = {styles.filename_textarea} 
-                            rows = {2}
-                            defaultValue = {parsed_obj.FileName}
+                            rows = {1}
+                            defaultValue = {filename}
                             onChange = {(event) => setNewFileName(event.target.value)}
                             placeholder = {parsed_obj.FileName} // change to value, onChange = {handleChange}
                         />
 
-                        {/* <JSONEditor entry = {parsed_obj.entry}/> */}
                         <Editor
                             className = {styles.editor}
                             height = "75%"
                             width = "90%"
                             theme = "light"
                             defaultLanguage = "json"
-                            defaultValue = {JSON.stringify(JSON.parse(parsed_obj.entry), null, 4)} // test this with different inputs
+                            defaultValue = {JSON.stringify(JSON.parse(formJSON), null, 4)}
                             onMount = {handleEditorDidMount}
                         />
 
                         <div className = {styles.save_close_buttons}>
-                            <Button text = "SAVE" color = "blue" handleClick = {() => updateForm(parsed_obj.FileName, newFileName, parsed_obj.entry, getJSONEditorValue()) }/>
+                            <Button text = "SAVE" color = "blue" handleClick = {() => updateForm(filename, newFileName, formJSON, getJSONEditorValue()) }/>
                             <Button text = "CLOSE" color = "grey" handleClick = {() => {
                                 
                                 // todo - update to setsjon's etc - after .map() refactoring
                                 console.log("CLOSE button clicked");
-                                setShowEditor(false);
+                                setNewFileName(null)
+                                setShowEditor(!showEditor);
                             }}/> 
                         </div>
+
                     </div>
-                ): null }
+                )}
 
             </div>
+        
         );
     } catch(error) {
         console.log("ERROR: " + error);
