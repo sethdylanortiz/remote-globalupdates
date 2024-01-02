@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef } from "react";
-import styles from "./Entry.module.css";
+import styles from "./entry.module.css";
 import Image from "next/image";
 import Button from "../button/Button";
 import { Editor } from "@monaco-editor/react";
@@ -92,25 +92,25 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
                     <p>{parsed_obj.FileName}</p>
                 </div>
 
-                <div className = {styles.edit_trash_buttons}>
+                <div className = {styles.meta_buttons}>
 
                     <Button text = "Edit" color = "blue" handleClick = {() => {
                         
-                        console.log("EDIT button clicked");
+                        console.log("Edit button clicked");
                         setShowEditor(!showEditor);
 
                     }}/>
-
                     <div className = {styles.trash_button}>
+                        {/* add button </> tag + funcationality/onClick(), etc. */}
                         <Image
                             src = {icon_trash}
                             alt = "icon_trash.png"
                             width = {30}
                         />
                     </div>
+
                 </div>
 
-                {/* only display json editor on click */}
                 {/* move to component/function? */}
                 {showEditor === true ? (
                     <div className = {styles.editor_container}>
@@ -142,6 +142,7 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
                             <Button text = "SAVE" color = "blue" handleClick = {() => updateForm(parsed_obj.FileName, newFileName, parsed_obj.entry, getJSONEditorValue()) }/>
                             <Button text = "CLOSE" color = "grey" handleClick = {() => {
                                 
+                                // todo - update to setsjon's etc - after .map() refactoring
                                 console.log("CLOSE button clicked");
                                 setShowEditor(false);
                             }}/> 

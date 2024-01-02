@@ -3,9 +3,8 @@ to-do:
 - configure to have various sizes depending on mobile devices
 */
 "use client"
-
 import React from "react";
-import styles from "./Button.module.css";
+import styles from "./button.module.css";
 
 const getColor = ({color}: {color: string}) => {
 
@@ -15,6 +14,8 @@ const getColor = ({color}: {color: string}) => {
             return "#5C84FF";
         case "grey":
             return "#DEDEDE";
+        case "green":
+            return "#2CB707";
         default:
             return "yellow";
     }

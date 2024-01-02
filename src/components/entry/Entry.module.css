@@ -34,14 +34,13 @@
     font-weight: 400;
 }
 
-.edit_trash_buttons{
+.meta_buttons{
     display: flex;
     flex: 1;
     justify-content: space-between;
     align-items: center;
 }
 
-/* trash_button */
 .trash_button{
     height: 50px;
     width: 50px;

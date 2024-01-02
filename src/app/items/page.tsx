@@ -11,9 +11,8 @@ to-do:
 
 import React from "react";
 import styles from "./page.module.css";
-
 import Entry from "@/components/entry/Entry"; 
-import JSONEditor from "@/components/JSONEditor/JSONEditor";
+import Button from "@/components/button/Button";
 
 // database calling
 import fetch from 'node-fetch';
@@ -65,7 +64,9 @@ const ItemsPage = async() => {
     return(
         // to-do: move styles.container into globals.css
         <div className = {styles.container}>
+            
             <p>All Items</p>
+
             <div className = {styles.items_container}>
 
                 {/* 

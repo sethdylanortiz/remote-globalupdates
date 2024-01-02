@@ -6,11 +6,17 @@ import Image from "next/image";
 import Link from "next/link";
 
 // styles
-import styles from "./Navbar.module.css";
+import styles from "./navbar.module.css";
 import logo_badpirate from "../../../public/pirate-ship.png";
 
 // to-do: change back to css from tailwind
 const Navbar = () => {
+
+    const links = [
+        {name: "Merge", href: "/merge"},
+        {name: "All Items", href: "/items"}
+    ];
+
     return(
         <nav className = {styles.container}>
 
@@ -20,12 +26,17 @@ const Navbar = () => {
                     alt = "logo_badpirate"
                     height = {60}
                 />
-            </Link>
+                <div className = {styles.header_name}>
+                    <h2>bad pirate</h2>
+                </div>
+           </Link>
 
-           <div className = {styles.header_name}>
-                <h2>bad pirate</h2>
+            <div className = {styles.nav_links}>
+                {links.map((link: any) => 
+                    <Link key = {link.name} href = {link.href}>{link.name}</Link>
+                )}
+            </div>
 
-           </div>
         </nav>
     )
 }
