@@ -13,8 +13,8 @@ import logo_badpirate from "../../../public/pirate-ship.png";
 const Navbar = () => {
 
     const links = [
-        {name: "Merge", href: "/merge"},
-        {name: "All Items", href: "/items"}
+        {name: "All Items", href: "/items"},
+        {name: "Merge", href: "/merge"}
     ];
 
     return(

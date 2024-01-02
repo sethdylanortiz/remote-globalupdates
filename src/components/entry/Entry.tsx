@@ -60,7 +60,7 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
     const [showEditor, setShowEditor] = useState(false);
 
     // for json <Editor/> component
-    const [formJSON, setFormJSON] = useState("");
+    const [formJSON, setFormJSON] = useState<any>(null); // null or string
     const editorRef = useRef(null);
 
     const handleEditorDidMount = (editor: any, monaco: any) => {
@@ -152,7 +152,6 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
             </div>
         );
-
     } catch(error) {
         console.log("ERROR: " + error);
         return <p>Error: {error?.message ?? JSON.stringify(error)}</p>

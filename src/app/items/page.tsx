@@ -8,34 +8,11 @@ to-do:
 - on change submit - push to dev database and overwrite cache
 - on merge tab, show all changes from current dev version agaisnt production version
 */
-
 import React from "react";
 import styles from "./page.module.css";
+import fetch from "node-fetch";
 import Entry from "@/components/entry/Entry"; 
 import Button from "@/components/button/Button";
-
-// database calling
-import fetch from 'node-fetch';
-
-// sample data - todo: pull from aws and load
-const items = [
-    {
-        "filename": "filasdaename1", 
-            "body": JSON.stringify({
-            "src": "Images/Sun1.png", 
-            "name": "sun1",
-            "hOffset": 100
-        })
-    },
-    {
-        "filename": "123456789012345678901234567890", 
-            "body": JSON.stringify({
-            "src": "Images/Sun2.png", 
-            "name": "sun2",
-            "hOffset": 200
-        })
-    }
-];
 
 const ItemsPage = async() => {
 
