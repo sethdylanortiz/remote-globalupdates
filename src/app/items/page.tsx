@@ -15,8 +15,10 @@ import Entry from "@/components/entry/Entry";
 // todo - add functionality:
 import Button from "@/components/button/Button";
 
+// add useReducer https://www.youtube.com/watch?v=RZPAQV7JvNU&ab_channel=LamaDev
 const ItemsPage = async() => {
 
+    // look into caching this - uncheck web browser 'disable' cache?
     const getEntryData = async() => {
         // add try-catch
         const response_obj = await fetch("http://localhost:3000/api/getEntries", {
@@ -30,7 +32,7 @@ const ItemsPage = async() => {
 
     // on page load
     const testing_ret_obj = await getEntryData();
-    const {entries_obj}: any = await testing_ret_obj.json();
+    const {entries_dev_obj}: any = await testing_ret_obj.json();
 
     return(
         // to-do: move styles.container into globals.css
@@ -42,7 +44,7 @@ const ItemsPage = async() => {
 
                 {/* pass all items */}
                 <Entry
-                    obj_str = {JSON.stringify(entries_obj.Items)}
+                    obj_str = {JSON.stringify(entries_dev_obj.Items)}
                 />
 
             </div>

@@ -44,7 +44,7 @@ const updateForm = async(curFileName: string, newFileName: string, curJSON: stri
         }
     }
     else {
-        console.log("updateForm() curJSON == newJSON, ignore call" + "\n\n" + 
+        console.log("updateForm() curJSON == newJSON, curFileName == newFileName, ignore call" + "\n\n" + 
                     "updateForm() curJSON_trim: \n" + curJSON_trim + "\n\n" + 
                     "updateForm() newJSON_trim: \n" + newJSON_trim);
     }
@@ -52,6 +52,7 @@ const updateForm = async(curFileName: string, newFileName: string, curJSON: stri
     // this must be done since we wont re-call entire db like we do on initial page load
 }
 
+// todo - after aws call/write - update, create new useState()/overwrite parsed_obj
 const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
     // for editor state
@@ -59,16 +60,26 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
     // for textarea filename
     const [filename, setFileName] = useState<any>(null);
-    const [newFileName, setNewFileName] = useState<any>(null);
+    const [newFileName, setNewFileName] = useState<any>("");
 
     // for json <Editor/> component
-    const [formJSON, setFormJSON] = useState<any>(null); // null or string
+    const [formJSON, setFormJSON] = useState<any>(null);
+    const [mount, setMount] = useState(false); // todo - make sure this works
+    const [objectIndex, setObjectIndex] = useState<any>(null); // todo - fix
     const editorRef = useRef(null);
     const handleEditorDidMount = (editor: any, monaco: any) => {
+        console.log("formJSON handleEditorDidMount()");
         editorRef.current = editor;
+        setMount(!mount);
         // getEditorValue();
     }
+    const handleEditorUnmount = () => {
+        console.log("formJSON handleEditorUnmount()");
+        setMount(!mount);
+        setFormJSON(null);
+    }
     const getJSONEditorValue = ():string => {
+        // todo - fix this error
         return editorRef.current.getValue();
     }
 
@@ -78,8 +89,8 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
         return(
             <div className = {styles.container}>
 
-                {parsed_obj.map((entry: any) => 
-                    <div className = {styles.entry}>
+                {parsed_obj.map((entry: any, index: number) => 
+                    <div className = {styles.entry} key = {entry.FileName}>
                         <div className = {styles.file}>
                             <Image
                                 src = {icon_file}
@@ -91,9 +102,15 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
                         <div className = {styles.meta_buttons}>
                             <Button text = "Edit" color = "blue" handleClick = {() => {
+                                setObjectIndex(index);
+                                console.log("index: " + index);
+                                console.log("objectIndex: " + objectIndex);
+
                                 console.log("Edit button clicked");
+                                // todo - disable all other buttons
                                 setFileName(entry.FileName);
-                                setFormJSON(entry.entry);
+                                setNewFileName(entry.FileName);
+                                mount ? setFormJSON(getJSONEditorValue()): setFormJSON(entry.entry);
                                 setShowEditor(!showEditor);
                             }}/>
                             <div className = {styles.trash_button}>
@@ -120,7 +137,7 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
                             rows = {1}
                             defaultValue = {filename}
                             onChange = {(event) => setNewFileName(event.target.value)}
-                            placeholder = {parsed_obj.FileName} // change to value, onChange = {handleChange}
+                            placeholder = {parsed_obj.FileName}
                         />
 
                         <Editor
@@ -136,9 +153,11 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
                         <div className = {styles.save_close_buttons}>
                             <Button text = "SAVE" color = "blue" handleClick = {() => updateForm(filename, newFileName, formJSON, getJSONEditorValue()) }/>
                             <Button text = "CLOSE" color = "grey" handleClick = {() => {
-                                
-                                // todo - update to setsjon's etc - after .map() refactoring
                                 console.log("CLOSE button clicked");
+        
+                                // todo - fix this
+                                console.log("parsed_obj[filename].entry: " + parsed_obj[objectIndex].entry);
+                                handleEditorUnmount();
                                 setNewFileName(null)
                                 setShowEditor(!showEditor);
                             }}/> 

@@ -2,7 +2,6 @@
     filename (pk): string
     entry: string
 */
-"use server";
 // aws sdk v3
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ScanCommand, DeleteCommand} from '@aws-sdk/lib-dynamodb';
@@ -19,12 +18,13 @@ const doc_client = DynamoDBDocumentClient.from(database_client);
 
 // method to GET all items [for display] - move to chunks
 // what order does it get it in? will it mix materials + foods?
-const getEntryDB = async() => {
+const getEntryDB = async(config) => {
 
     console.log("\n" + "dynamodb.js - inside getEntryDB()");
 
+    const tablename = config === "production"? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT
     const params = {
-        TableName: process.env.TABLE_NAME_DEVELOPMENT
+        TableName: tablename
         // todo - add batch, by 5x entries at a time
     };
 

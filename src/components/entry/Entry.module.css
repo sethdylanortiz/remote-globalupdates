@@ -78,7 +78,7 @@
     justify-content: center; /* x-axis centering */
     gap: 10px;
 
-    width: 90%;
+    width: 75%;
     height: 600px;
 
     background-color: #F7F7F7;
@@ -93,7 +93,7 @@
 .filename_header{
     width: 90%;
     text-align: left;
-    font-weight: 400;
+    font-weight: 00;
     color: black;
 }
 

@@ -1,0 +1,11 @@
+.container{
+    /* change */
+    height: 100%;
+    width: 100%;
+    background-color: black;
+}
+
+/* for diffEditor */
+.diffEditor{
+    width: 100%;
+}
