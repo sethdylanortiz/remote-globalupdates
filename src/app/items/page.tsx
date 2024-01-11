@@ -6,6 +6,7 @@ to-do:
 - cache?
 - onclick, open cached filename's values - formatted json ready for edit + json schema checking
 - on change submit - push to dev database and overwrite cache
+- implement redirect(/all items)
 - on merge tab, show all changes from current dev version agaisnt production version
 */
 import React from "react";

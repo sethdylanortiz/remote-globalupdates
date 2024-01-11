@@ -1,7 +1,9 @@
 import React from "react";
 import styles from "./page.module.css";
-import fetch from "node-fetch";
 import DiffEntry from "@/components/diffEntry/DiffEntry";
+
+// services
+import { getDifferenceEntries, getItemsDatabase } from "./services";
 
 // todo - implement cache search before making another aws call
 // aws call dev database
@@ -14,46 +16,24 @@ import DiffEntry from "@/components/diffEntry/DiffEntry";
 
 const MergePage = async() => {
     
-    // look into caching this - uncheck web browser 'disable' cache?
-    const getDeveloperDatabase = async() => {
-        // add try-catch
-        const response_obj = await fetch("http://localhost:3000/api/getEntries", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-        });
-        return response_obj;
-    }
-    const getProductionDatabase = async() => {
-        // add try-catch
-        const repsonse_obj = await fetch("http://localhost:3000/api/getProductionEntries", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        return repsonse_obj;
-    }
     // on page load
-    const developer_config_obj = await getDeveloperDatabase();
-    const {entries_dev_obj}: any = await developer_config_obj.json();
-    console.log("\n" + "entries_dev_obj: \n" + entries_dev_obj);
-    console.log("\n" + "entries_dev_obj.Items: \n" + entries_dev_obj.Items);
-    console.log("\n" + "JSON.stringify(entries_dev_obj): \n" + JSON.stringify(entries_dev_obj));
+    const get_items_databases = await getItemsDatabase();
+    const {entries_dev_obj, entries_prod_obj} = await get_items_databases.json();
 
-    const production_config_obj = await getProductionDatabase();
-    const {entries_prod_obj}: any = await production_config_obj.json();
-    console.log("\n" + "entries_prod_obj: \n" + entries_prod_obj);
-    console.log("\n" + "entries_prod_obj.Items: \n" + entries_prod_obj.Items);
-    console.log("\n" + "JSON.stringify(entries_prod_obj): \n" + JSON.stringify(entries_prod_obj));
+    const res_obj = await getDifferenceEntries(JSON.stringify(entries_dev_obj.Items), JSON.stringify(entries_prod_obj.Items));
+    console.log("res_obj:   " + res_obj + "\n\n");
+    const {newItems, syncedItemsDiffentEntry, deletedItems} = JSON.parse(res_obj);
+    console.log("MergePage.tsx, newItems: "); console.log(newItems);
+    console.log("MergePage.tsx, syncedItemsDiffentEntry: "); console.log(syncedItemsDiffentEntry);
+    console.log("MergePage.tsx, deletedItems: "); console.log(deletedItems);
 
     return(
         <div className = {styles.container}>
 
             <DiffEntry
-                dev_obj_str = {entries_dev_obj.Items} // passing obj now
-                prod_obj_str = {entries_prod_obj.Items}
+                newItems = {newItems}
+                syncedItemsDiffentEntry = {syncedItemsDiffentEntry}
+                deletedItems = {deletedItems}
             />
             
         </div>

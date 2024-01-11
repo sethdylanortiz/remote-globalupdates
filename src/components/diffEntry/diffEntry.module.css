@@ -1,8 +1,43 @@
 .container{
-    /* change */
-    height: 100%;
+    background-color: brown;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* x-axis */
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+    gap: 20px;
+}
+
+/* for entry */
+.entry_container{
+    background-color: #89cff0;
     width: 100%;
-    background-color: black;
+    height: 70px;
+
+    display: flex;
+    flex-direction: row;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+.file{
+    display: flex;
+    gap: 20px;
+    width: auto;
+    padding-right: 20px;
+
+    /* for text */
+    color: black;
+    font-size: 20px;
+    align-items: center;
+    font-weight: 400;
+
+    background-color: red;
 }
 
 /* for diffEditor */
