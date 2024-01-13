@@ -1,6 +1,6 @@
 "use server";
 import { NextResponse } from "next/server";
-import { getEntryDB } from "../lib/dynamodb";
+import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
 
 const getItemsDatabase = async() => {
     console.log("\n\n" + "inside services.ts, getItemsDatabase()");
@@ -15,17 +15,40 @@ const getItemsDatabase = async() => {
             entries_prod_obj: items_prod_obj,
 
             success: true,
-            status: 200
         });
     } catch(error){
 
         return NextResponse.json({
-            responseMsg: ["services.ts ERROR getEntryDB() for ${database_type}"],
+            responseMsg: ["services.ts ERROR getEntryDB()"],
             entries_dev_obj: null,
             entries_prod_obj: null,
 
             success: false,
-            status: 500
+        });
+    }
+}
+
+const handleMerge = async({filename, newJSON}: {filename: any, newJSON: any}) => {
+    console.log("\n\n" + "inside services.ts, handleMerge()");
+
+    try{
+
+        // newJSON == "{}" ? await deleteEntryDB(filename) : await updateEntryDB(filename);
+        console.log("services.ts, handleMerge() - filename: " + filename);
+        console.log("services.ts, handleMerge() - newJSON: " + newJSON);
+
+        return NextResponse.json({
+            responseMsg: ["services.ts SUCCESS handleMerge()"],
+
+            success: false,
+        });
+
+    }catch(error){
+
+        return NextResponse.json({
+            responseMsg: ["services.ts ERROR handleMerge()"],
+
+            success: false,
         });
     }
 }
@@ -48,14 +71,19 @@ const getDifferenceEntries = async(dev_obj_str: string, prod_obj_str: string) =>
     console.log("dev_obj_filenames: "); console.log(dev_obj_filenames);
     console.log("prod_obj_filenames: "); console.log(prod_obj_filenames);
 
-    const syncedItemsDiffentEntry = dev_obj.filter((item: any) => {
+    // SYNCED: items that exist in both => and include differences in entry{} values
+    var syncedItemsDiffentEntry = new Array();
+    dev_obj.map((item: any) => {
         // find filenames that exist in both objs && differnence in entry
         let found_index = prod_obj_filenames.indexOf(item.FileName);
-        console.log("found_index: " + found_index);
         if(found_index !== -1 && prod_obj[found_index].entry !== item.entry)
-            return item;
+        syncedItemsDiffentEntry.push({ 
+                FileName: item.FileName,
+                dev_entry: item.entry,
+                prod_entry: prod_obj[found_index].entry
+            });
     });
-    console.log("syncedItemsDiffentEntry: "); console.log(syncedItemsDiffentEntry);
+    console.log("services.ts, syncedItemsDiffentEntry: "); console.log(syncedItemsDiffentEntry);
 
     // NEW: if item inside dev_obj dne inside of prod_obj => is marked as a new entry
     const newItems = dev_obj.filter((item: any) => {
@@ -74,4 +102,4 @@ const getDifferenceEntries = async(dev_obj_str: string, prod_obj_str: string) =>
     return(JSON.stringify({newItems, syncedItemsDiffentEntry, deletedItems}));
 }
 
-export { getDifferenceEntries, getItemsDatabase }
+export { getDifferenceEntries, getItemsDatabase, handleMerge }

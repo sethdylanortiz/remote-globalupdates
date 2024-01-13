@@ -68,7 +68,9 @@
 /* from json editor */
 .editor_container{
     position: absolute;
-
+    /* text-align: center; */
+    margin: auto;
+    
     display: flex;
     flex-direction: column;
     padding-top: 15px;
@@ -81,13 +83,11 @@
     width: 75%;
     height: 600px;
 
-    background-color: #F7F7F7;
 
     border-width: 1.5px;
     border-color: black;
 
-    /* text-align: center; */
-    margin: auto;
+
 }
 
 .filename_header{

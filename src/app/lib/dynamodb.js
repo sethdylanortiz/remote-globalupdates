@@ -63,12 +63,13 @@ const updateEntryDB = async(filename, newJSON) => {
     return doc_client.send(new UpdateCommand(params));
 }
 
-const deleteEntryDB = async(filename) => {
+const deleteEntryDB = async(filename, config) => {
     console.log("\n" + "dynamodb.js - inside deleteEntryDB()");
     console.log("dynamodb.js - filename: " + filename);
 
+    const tablename = (config === "production") ? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT
     const params = {
-        TableName: process.env.TABLE_NAME_DEVELOPMENT,
+        TableName: tablename,
         Key: {
             FileName: filename
         }

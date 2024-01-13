@@ -16,8 +16,10 @@ const getColor = ({color}: {color: string}) => {
             return "#DEDEDE";
         case "green":
             return "#2CB707";
-        default:
+        case "yellow":
             return "yellow";
+        default:
+            return "white";
     }
 }
 
