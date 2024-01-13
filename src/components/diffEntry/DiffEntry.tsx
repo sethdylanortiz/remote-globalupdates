@@ -2,11 +2,11 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./diffEntry.module.css";
-import { DiffEditor } from "@monaco-editor/react";
 import Button from "../button/Button";
 
 // services
 import { handleMerge } from "@/app/merge/services";
+import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 
 // icons
 import icon_file from "../../../public/icon_file.png";
@@ -20,9 +20,9 @@ type Item = [{
     entry: string
 }];
 
-const DiffEntry = (// todo - implement useReducer()
-{newItems, syncedItemsDiffentEntry, deletedItems}: 
-    {newItems: Item, syncedItemsDiffentEntry: any, deletedItems: Item}):JSX.Element =>{
+// todo - implement useReducer()
+const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}: 
+{newItems: Item, syncedItemsDiffentEntry: any, deletedItems: Item}):JSX.Element =>{
 
     // for editor state
     const [showEditor, setShowEditor] = useState(false);
@@ -33,21 +33,13 @@ const DiffEntry = (// todo - implement useReducer()
     // for entry editor
     const [originalJSON, setOriginalJSON] = useState<string | null>(null);
     const [modifiedJSON, setModifiedJSON] = useState<string | null>(null);
-    const [mount, setMount] = useState(false); // todo - make sure this works
-    const editorRef = useRef(null);
-    const handleEditorDidMount = (editor: any, monaco: any) => {
-        console.log("DiffEntry handleEditorDidMount()");
-        editorRef.current = editor;
-        setMount(!mount); // check this
-    }
-    const handleCompare = (filename: string, original: string, modified: string) => {
+    const handleCompare = (filename: string, original: string | null, modified: string | null) => {
         setFileName(filename);
         setOriginalJSON(original);
         setModifiedJSON(modified);
         setShowEditor(true);
     }
     const handleCloseEditor = () => {
-        // add unmount on close 
         setShowEditor(false);
         setFileName(null);
         setOriginalJSON(null);
@@ -73,7 +65,7 @@ const DiffEntry = (// todo - implement useReducer()
 
                         <div className = {styles.button_container}>
                             <Button text = "Compare" color = "blue" 
-                                handleClick = {() => {handleCompare(item.FileName, "{}",item.entry)}}/>
+                                handleClick = {() => {handleCompare(item.FileName, null, item.entry)}}/>
                             <Image
                                 src = {icon_plus}
                                 alt = "icon_plus.png"
@@ -128,7 +120,7 @@ const DiffEntry = (// todo - implement useReducer()
                         <div className = {styles.button_container}>
                             <Button text = "Compare" color = "blue" 
                                 handleClick = {() => {
-                                        {handleCompare(item.FileName, item.entry,"{}")}
+                                        {handleCompare(item.FileName, item.entry, null)}
                                     }
                                 }/>
                             <Image
@@ -156,30 +148,20 @@ const DiffEntry = (// todo - implement useReducer()
                             value = {fileName}
                         />
 
-                        <div className = {styles.section_titles}>
-                            <div className = {styles.title}>
-                                <p>Production</p>
-                            </div>
-                            <div className = {styles.title}>
-                                <p>Development</p>
-                            </div>
-                        </div>
-
-                        <DiffEditor
-                            className = {styles.diffeditor}
-                            height = "75%"
-                            width = "90%"
-                            theme = "light"
-                            language = "json"
-                            options = {{
-                                readOnly: true,
-                                renderOverviewRuler: false,
-                                scrollBeyondLastLine: false,
-                            }}
-                                                    // change this .parse() into another var
-                            original = {JSON.stringify(JSON.parse(originalJSON), null, 4)}
-                            modified = {JSON.stringify(JSON.parse(modifiedJSON), null, 4)}
-                            onMount = {handleEditorDidMount}
+                        <ReactDiffViewer 
+                            // styles = {{
+                            //     line: {
+                            //         fontSize: '16px',
+                            //         height: '7px',
+                            //          padding: '100px'
+                            //     }
+                            // }}
+                            compareMethod = {DiffMethod.WORDS}
+                            splitView = {false}
+                            // oldValue = {undefined}
+                            oldValue = {originalJSON == null ? undefined : JSON.stringify(JSON.parse(originalJSON), null, 4)}
+                            newValue = {modifiedJSON == null ? undefined : JSON.stringify(JSON.parse(modifiedJSON), null, 4)}
+                            // renderContent={this.highlightSyntax}
                         />
 
                         <div className = {styles.button_section}> 

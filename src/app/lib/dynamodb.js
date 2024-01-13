@@ -1,5 +1,5 @@
 /*
-    filename (pk): string
+    FileName (pk): string
     entry: string
 */
 // aws sdk v3
