@@ -1,5 +1,7 @@
 "use server";
 import { NextResponse } from "next/server";
+import { redirect } from "next/navigation"; // https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirect-function
+import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
 import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
 
 const getItemsDatabase = async() => {
@@ -28,29 +30,32 @@ const getItemsDatabase = async() => {
     }
 }
 
-const handleMerge = async({filename, newJSON}: {filename: any, newJSON: any}) => {
+const handleMerge = async({filename, newJSON}: {filename: string, newJSON: string | null}) => {
     console.log("\n\n" + "inside services.ts, handleMerge()");
 
     try{
-
-        // newJSON == "{}" ? await deleteEntryDB(filename) : await updateEntryDB(filename);
-        console.log("services.ts, handleMerge() - filename: " + filename);
-        console.log("services.ts, handleMerge() - newJSON: " + newJSON);
-
-        return NextResponse.json({
-            responseMsg: ["services.ts SUCCESS handleMerge()"],
-
-            success: false,
-        });
+        if(newJSON == null)
+        {
+            await deleteEntryDB(filename, "production");
+            console.log("services.ts SUCCESS handleMerge() for DELETE");
+        }else{
+            await updateEntryDB(filename, newJSON);
+            console.log("services.ts SUCCESS handleMerge() for UPDATE/ADD");
+        }
 
     }catch(error){
+        console.log("services.ts ERROR handleMerge()");
+        // redirect("/404");
 
-        return NextResponse.json({
-            responseMsg: ["services.ts ERROR handleMerge()"],
-
-            success: false,
-        });
+        /* REMOVED - cannot send obj/NextResponse from server to client*/
+        // return NextResponse.json({
+        //     responseMsg: ["services.ts ERROR handleMerge()"],
+        //     success: false,
+        // });
     }
+
+    revalidatePath("/merge");  // update cached items/entries
+    // redirect("/merge");  // move to useRouter.refresh() in client component?
 }
 
 // compare objects, find differences - to be mapped and displayedmain.ts(31,31): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ filename: string; entry: string; }'.

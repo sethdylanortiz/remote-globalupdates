@@ -158,18 +158,13 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
                             // }}
                             compareMethod = {DiffMethod.WORDS}
                             splitView = {false}
-                            // oldValue = {undefined}
                             oldValue = {originalJSON == null ? undefined : JSON.stringify(JSON.parse(originalJSON), null, 4)}
                             newValue = {modifiedJSON == null ? undefined : JSON.stringify(JSON.parse(modifiedJSON), null, 4)}
-                            // renderContent={this.highlightSyntax}
                         />
 
                         <div className = {styles.button_section}> 
                             <Button text = "MERGE" color = "blue" handleClick = {() => {
-                                    console.log();
-                                    handleMerge({
-                                        filename: fileName,
-                                        newJSON: modifiedJSON})
+                                    handleMerge({filename: fileName, newJSON: modifiedJSON});
                                 }}/>
                             <Button text = "CLOSE" color = "grey" handleClick = {handleCloseEditor}/>
 
