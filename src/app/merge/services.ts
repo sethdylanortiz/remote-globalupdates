@@ -4,6 +4,19 @@ import { redirect } from "next/navigation"; // https://nextjs.org/docs/app/build
 import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
 import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
 
+type Item = {
+    FileName: string,
+    entry: string
+};
+type Items = [Item];
+
+type SyncedItem = {
+    FileName: string,
+    dev_entry: string,
+    prod_entry: string
+};
+type SycnedItems = [SyncedItem];
+
 const getItemsDatabase = async() => {
     console.log("\n\n" + "inside services.ts, getItemsDatabase()");
     
@@ -30,32 +43,38 @@ const getItemsDatabase = async() => {
     }
 }
 
-const handleMerge = async({filename, newJSON}: {filename: string, newJSON: string | null}) => {
-    console.log("\n\n" + "inside services.ts, handleMerge()");
+const mergeAll = async({newItems, syncedItemsDiffentEntry, deletedItems}: {newItems: Items, syncedItemsDiffentEntry: SycnedItems, deletedItems: Items}) => {
+    console.log("services.ts, inside mergeAll()! ");
 
+    var item_type_index = "newItems";
     try{
-        if(newJSON == null)
-        {
-            await deleteEntryDB(filename, "production");
-            console.log("services.ts SUCCESS handleMerge() for DELETE");
-        }else{
-            await updateEntryDB(filename, newJSON);
-            console.log("services.ts SUCCESS handleMerge() for UPDATE/ADD");
-        }
+        newItems.map(async(item: Item) => {
+            await updateEntryDB(item.FileName, item.entry, "production");
+            console.log(`successfully updated ${item.FileName}'s Item!`);
+        });
+        revalidatePath("/merge");  // update cached items/entries
+
+        item_type_index = "syncedItemsDiffentEntry";
+        syncedItemsDiffentEntry.map(async(item: SyncedItem) => {
+            await updateEntryDB(item.FileName, item.dev_entry, "production");
+            console.log(`successfully updated ${item.FileName}'s Item!`);
+        });
+        revalidatePath("/merge");  // update cached items/entries
+
+        item_type_index = "deletedItems";
+        deletedItems.map(async(item: Item) => {
+            await deleteEntryDB(item.FileName, "production");
+            console.log(`successfully updated ${item.FileName}'s Item!`);
+        });
+        revalidatePath("/merge");  // update cached items/entries
 
     }catch(error){
-        console.log("services.ts ERROR handleMerge()");
-        // redirect("/404");
+        console.log("services.ts ERROR handleMerge(), error: " + error);
+        console.log("services.ts ERROR handleMerge(), item_type_index: " + item_type_index);
+    };
 
-        /* REMOVED - cannot send obj/NextResponse from server to client*/
-        // return NextResponse.json({
-        //     responseMsg: ["services.ts ERROR handleMerge()"],
-        //     success: false,
-        // });
-    }
-
-    revalidatePath("/merge");  // update cached items/entries
-    // redirect("/merge");  // move to useRouter.refresh() in client component?
+    // revalidatePath("/merge");  // update cached items/entries
+    console.log("end of mergeAll()!");
 }
 
 // compare objects, find differences - to be mapped and displayedmain.ts(31,31): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ filename: string; entry: string; }'.
@@ -63,8 +82,8 @@ const handleMerge = async({filename, newJSON}: {filename: string, newJSON: strin
 const getDifferenceEntries = async(dev_obj_str: string, prod_obj_str: string) => {
 
     const [prod_obj, dev_obj] = await Promise.all([JSON.parse(prod_obj_str), JSON.parse(dev_obj_str)]);
-    console.log("services.ts, prod_obj_str: "); console.log(prod_obj_str);
-    console.log("\n" + "services.ts, dev_obj_str: "); console.log(dev_obj_str);
+    // console.log("services.ts, prod_obj_str: "); console.log(prod_obj_str);
+    // console.log("\n" + "services.ts, dev_obj_str: "); console.log(dev_obj_str);
 
     // SYNC: loop through and find what exists
     const dev_obj_filenames = dev_obj.map((item: any) => {
@@ -107,4 +126,4 @@ const getDifferenceEntries = async(dev_obj_str: string, prod_obj_str: string) =>
     return(JSON.stringify({newItems, syncedItemsDiffentEntry, deletedItems}));
 }
 
-export { getDifferenceEntries, getItemsDatabase, handleMerge }
+export { getDifferenceEntries, getItemsDatabase, mergeAll}

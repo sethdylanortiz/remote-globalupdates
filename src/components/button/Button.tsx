@@ -7,19 +7,20 @@ import React from "react";
 import styles from "./button.module.css";
 
 const getColor = ({color}: {color: string}) => {
-
     switch(color)
     {
         case "red":
-            return "#FF4F33";
+            return "#E34127";
         case "blue":
-            return "#5C84FF";
+            return "#6991ff";
         case "grey":
             return "#DEDEDE";
         case "green":
             return "#2CB707";
         case "yellow":
             return "yellow";
+        case "orange":
+            return "#FB842D";
         default:
             return "white";
     }
@@ -32,6 +33,8 @@ const Button = ({text, color, handleClick}: {text: string, color: string, handle
         <button
         className = {styles.button_container}
         style = {{
+            // borderColor: "#2CB707",
+            // borderWidth: "2px",
             backgroundColor: getColor({color})
         }}
         onClick = {handleClick}

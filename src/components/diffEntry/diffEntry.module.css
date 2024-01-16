@@ -1,11 +1,16 @@
 .container{
     /* background-color: brown; */
+    width: 90%;
 
     display: flex;
     flex-direction: column;
     align-items: center; /* x-axis */
+    justify-content: center;
+    text-align: center;
 
-    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
     margin-bottom: 10px;
     gap: 20px;
 }
@@ -25,8 +30,7 @@
     padding-left: 10px;
     padding-right: 10px;
 
-    border-color: black;
-    border-width: 1.5px;
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.6);
 }
 .file{
     display: flex;
@@ -39,7 +43,6 @@
     font-size: 20px;
     align-items: center;
     font-weight: 400;
-
     /* background-color: red; */
 }
 .button_container{
@@ -57,29 +60,28 @@
 /* for editor form */
 .editor_container{
     background-color: #F7F7F7;
-    border-width: 1.5px;
-    border-color: black;
-
     display: flex;
     flex-direction: column;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 
     align-items: center; /* y-axis centering */
     justify-content: center; /* x-axis centering */
     gap: 10px;
 
-    width: 75%;
+    width: 65%;
     height: auto;
 
     position: absolute;
     margin: auto; /* look into this */
     /* text-align: center; */
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.6);
+
 }
 .editor_text{
     width: 90%;
     text-align: left;
-    font-weight: 00;
+    font-weight: 400;
     color: black;
 }
 .filename_textarea{
@@ -89,8 +91,7 @@
     padding-bottom: 5px;
     resize: none;
 
-    border-width: 1.5px;
-    border-color: black;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
 }
 .section_titles{
     display: flex;
@@ -110,47 +111,39 @@
     height: 100%; /* auto */
     background-color: blue;
 
-    border-width: 1.5px;
-    border-color: black;
-
+    text-align: left;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
 }
 .editor_footer{
-    text-align: center;
-    align-items: center;
-
-    display: flex;
-    flex: row;
-
-    padding-top: 5px;
+    padding-top: 10px;
     width: 90%;
-    height: auto;
-
-    justify-content: right;
-}
-.editor_buttons_container{
-    display: flex;
-    flex: row;
-    gap: 10px;
-}
-.diffeditor{
-    border-width: 1.5px;
-    border-color: black;
+    text-align: right;
 }
 
 /* for confirmation merge */
 .confirmation_container{
     position: absolute;
-    border-width: 1.5px;
-    border-color: black;
 
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 25px;
 
     justify-content: center;
     align-items: center;
-    width: 115%;
-    height: 200px;
+    width: 45%;
+    height: 250px;
+
+    font-weight: 400px;
+
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.6);
+}
+.confirmation_body{
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    gap: 5px
+    /* text-align: center; */
 }
 .confirmation_button_container{
     display: flex;
@@ -160,6 +153,10 @@
 .confimration_success_footer{
     float: right;
     width: 75%;
-    text-align: right;
+    text-align: center;
     /* background-color: blue; */
+}
+.entries_footer{
+    width: 100%;
+    text-align: right;
 }

@@ -33,21 +33,22 @@ const getEntryDB = async(config) => {
     return doc_client.send(new ScanCommand(params));
 }
 
-const updateEntryDB = async(filename, newJSON) => {
+const updateEntryDB = async(filename, newJSON, config) => {
     console.log("\n" + "dynamodb.js - inside updateEntryDB()");
     console.log("dynamodb.js - filename: " + filename);
     console.log("dynamodb.js - typeof filename: " + typeof filename);
     console.log("dynamodb.js - newJSON: " + newJSON);
     console.log("dynamodb.js - typeof newJSON: " + typeof newJSON);
 
+    const tablename = (config === "production") ? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT;
     const params = {
-        TableName: process.env.TABLE_NAME_DEVELOPMENT,
+        TableName: tablename,
         Key: {
             FileName: filename
         },
         UpdateExpression: "SET entry = :p",
         ExpressionAttributeValues: {
-            ":p": newJSON // needs JSON.stringify(newJSON, null, 4)?
+            ":p": newJSON
         },
         ReturnValues: "ALL_NEW" // returns this string on completion
     };
@@ -67,7 +68,7 @@ const deleteEntryDB = async(filename, config) => {
     console.log("\n" + "dynamodb.js - inside deleteEntryDB()");
     console.log("dynamodb.js - filename: " + filename);
 
-    const tablename = (config === "production") ? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT
+    const tablename = (config === "production") ? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT;
     const params = {
         TableName: tablename,
         Key: {
