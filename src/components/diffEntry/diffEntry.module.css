@@ -70,14 +70,13 @@
     gap: 10px;
 
     width: 75%;
-    height: 600px;
+    height: auto;
 
     position: absolute;
-    margin: auto;
+    margin: auto; /* look into this */
     /* text-align: center; */
-
 }
-.filename_header{
+.editor_text{
     width: 90%;
     text-align: left;
     font-weight: 00;
@@ -106,7 +105,19 @@
     width: 50%;
     flex: 1;
 }
-.button_section{
+.diff_container{
+    width: 90%;
+    height: 100%; /* auto */
+    background-color: blue;
+
+    border-width: 1.5px;
+    border-color: black;
+
+}
+.editor_footer{
+    text-align: center;
+    align-items: center;
+
     display: flex;
     flex: row;
 
@@ -115,12 +126,40 @@
     height: auto;
 
     justify-content: right;
+}
+.editor_buttons_container{
+    display: flex;
+    flex: row;
     gap: 10px;
 }
-
-/* todo - chagne to global css */
-/* for diffEditor */
 .diffeditor{
     border-width: 1.5px;
     border-color: black;
+}
+
+/* for confirmation merge */
+.confirmation_container{
+    position: absolute;
+    border-width: 1.5px;
+    border-color: black;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    justify-content: center;
+    align-items: center;
+    width: 115%;
+    height: 200px;
+}
+.confirmation_button_container{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.confimration_success_footer{
+    float: right;
+    width: 75%;
+    text-align: right;
+    /* background-color: blue; */
 }

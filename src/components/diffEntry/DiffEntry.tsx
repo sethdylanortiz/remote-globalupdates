@@ -13,6 +13,7 @@ import icon_file from "../../../public/icon_file.png";
 import icon_plus from "../../../public/icon-plus.png"
 import icon_minus from "../../../public/icon-minus.png"
 import icon_warning from "../../../public/icon-warning.png";
+import icon_checkmark from "../../../public/icon_checkmark.png";
 
 // todo - implement <Context>, pass to services.ts, to <layout>
 type Item = [{
@@ -26,6 +27,10 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
 
     // for editor state
     const [showEditor, setShowEditor] = useState(false);
+
+    // for merge confirmation state
+    const [showConfimation, setShowConfirmation] = useState(false);
+    const [showMergeSuccess, setShowMergeSuccess] = useState(false);
 
     // for filename
     const [fileName, setFileName] = useState<any>(null);
@@ -44,6 +49,11 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
         setFileName(null);
         setOriginalJSON(null);
         setModifiedJSON(null);
+    }
+    const handleMergeComplete = () => {
+        handleCloseEditor();
+        setShowConfirmation(false);
+        setShowMergeSuccess(false);
     }
 
     try{
@@ -133,10 +143,10 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
                     </div>
                 )}
 
-                {showEditor == true?            
+                {showEditor == true ?
                     <section className = {styles.editor_container}>
 
-                        <div className = {styles.filename_header}> 
+                        <div className = {styles.editor_text}> 
                             <p>Current file</p>
                         </div>
 
@@ -148,28 +158,78 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
                             value = {fileName}
                         />
 
-                        <ReactDiffViewer 
-                            // styles = {{
-                            //     line: {
-                            //         fontSize: '16px',
-                            //         height: '7px',
-                            //          padding: '100px'
-                            //     }
-                            // }}
-                            compareMethod = {DiffMethod.WORDS}
-                            splitView = {false}
-                            oldValue = {originalJSON == null ? undefined : JSON.stringify(JSON.parse(originalJSON), null, 4)}
-                            newValue = {modifiedJSON == null ? undefined : JSON.stringify(JSON.parse(modifiedJSON), null, 4)}
-                        />
+                        <div className = {styles.editor_text}>
+                            <p>Note: The following changes will be applied to PRODUCTION</p>
+                        </div>
 
-                        <div className = {styles.button_section}> 
-                            <Button text = "MERGE" color = "blue" handleClick = {() => {
-                                    handleMerge({filename: fileName, newJSON: modifiedJSON});
-                                }}/>
-                            <Button text = "CLOSE" color = "grey" handleClick = {handleCloseEditor}/>
+                        <div className = {styles.diff_container}>
+                            <ReactDiffViewer 
+                                // styles = {{
+                                //     line: {
+                                //         fontSize: '16px',
+                                //         height: '7px',
+                                //     }
+                                // }}
+                                compareMethod = {DiffMethod.WORDS}
+                                splitView = {false}
+                                oldValue = {originalJSON == null ? undefined : JSON.stringify(JSON.parse(originalJSON), null, 4)}
+                                newValue = {modifiedJSON == null ? undefined : JSON.stringify(JSON.parse(modifiedJSON), null, 4)}
+                            />
+                        </div>
+
+                        <div className = {styles.editor_footer}> 
+                        
+                            <p className = {styles.editor_text}>Merge this change into production?</p>
+
+                            <div className = {styles.editor_buttons_container}>
+                                <Button text = "MERGE" color = "blue" handleClick = {() => {
+                                        setShowConfirmation(true);
+                                    }}/>
+                                <Button text = "CLOSE" color = "grey" handleClick = {handleCloseEditor}/>
+                            </div>
 
                         </div>
+
+                        {showConfimation == true ? 
+                            <div className = {styles.confirmation_container}  style = {{background: "#FFF38D"}}>
+
+                                <p>Are you sure you want to merge this change into production?</p>
+                                
+                                <div className = {styles.confirmation_button_container}>
+                                    <Button text = "MERGE" color = "blue" handleClick = {() => {
+                                        handleMerge({filename: fileName, newJSON: modifiedJSON});
+                                        // move to function, call await else, 404 redirect?
+                                        setShowMergeSuccess(true);
+                                        console.log("confirmation merge button clicked!");
+                                    }}/>
+            
+                                    <Button text = "CANCEL" color = "red" handleClick = {() => {
+                                        setShowConfirmation(false);
+                                        console.log("cancel merge button clicked!");
+                                    }}/>
+                                </div>
+                            </div>
+                        
+                        : null}
+
+                        {showMergeSuccess == true ? 
+                            <div className = {styles.confirmation_container}  style = {{background: "#C4FFB2"}}>
+                                <p>Changes have successfully been merged into PRODUCTION</p>
+                                <Image
+                                    src = {icon_checkmark}
+                                    alt = "icon_checkmark.png"
+                                    height = {40}
+                                />
+                                <div className = {styles.confimration_success_footer}>
+                                    <Button text = "CLOSE" color = "red" handleClick = {() => {
+                                        handleMergeComplete();
+                                    }}/>
+                                </div>
+                            </div>
+                        : null}
+
                     </section>
+
                 : null}
 
             </div>

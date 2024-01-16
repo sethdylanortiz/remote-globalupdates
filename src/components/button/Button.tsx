@@ -10,6 +10,8 @@ const getColor = ({color}: {color: string}) => {
 
     switch(color)
     {
+        case "red":
+            return "#FF4F33";
         case "blue":
             return "#5C84FF";
         case "grey":
