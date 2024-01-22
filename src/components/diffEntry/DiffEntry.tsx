@@ -199,6 +199,7 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
                     </div>
                 }
                 {showEditor == true &&
+                    <div className = {styles.background_opacity}>
                     <section className = {styles.editor_container}>
 
                         <div className = {styles.editor_text}> 
@@ -239,6 +240,7 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
                         </div>
 
                     </section>
+                    </div>
                 }
 
             </div>

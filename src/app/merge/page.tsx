@@ -6,7 +6,6 @@ import { getDifferenceEntries, getItemsDatabase } from "./services";
 import DiffEntry from "@/components/diffEntry/DiffEntry";
 
 const MergePage = async() => {
-    
     // on page load
     const get_items_databases = await getItemsDatabase();
     const {entries_dev_obj, entries_prod_obj} = await get_items_databases.json();

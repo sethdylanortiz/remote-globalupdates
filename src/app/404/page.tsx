@@ -7,6 +7,10 @@ import Button from "@/components/button/Button";
 // images
 import image_sinkingship from "../../../public/image-sinkingship.png";
 
+/* 
+to-do:
+    - pass optional props? on error to display from try/catch db fail
+*/
 const ErrorPage = () => {
     return (
         <div className = {styles.container}>

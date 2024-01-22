@@ -28,7 +28,7 @@ const getEntryDB = async(config) => {
         // todo - add batch, by 5x entries at a time
     };
 
-    // todo - add try catch here
+    // todo - add try catch here?
     // https://levelup.gitconnected.com/building-a-next-js-dynamodb-crud-app-4bb2afe0d2f6
     return doc_client.send(new ScanCommand(params));
 }

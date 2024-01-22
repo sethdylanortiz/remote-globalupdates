@@ -1,45 +1,32 @@
-/* 
-key: filename, value: string object
-
-to-do:
-- fetch aws by chunks of 5 entries, getting filenames and their strings/values
-- cache?
-- onclick, open cached filename's values - formatted json ready for edit + json schema checking
-- on change submit - push to dev database and overwrite cache
-- implement redirect(/all items)
-- on merge tab, show all changes from current dev version agaisnt production version
-*/
 import React from "react";
-import styles from "./page.module.css";
-import fetch from "node-fetch";
+import styles from "./itemspage.module.css";
 import Entry from "@/components/entry/Entry"; 
-// todo - add functionality:
+// todo - <Add/New> Entry button functionality:
 import Button from "@/components/button/Button";
 
-// add useReducer https://www.youtube.com/watch?v=RZPAQV7JvNU&ab_channel=LamaDev
+// services
+import { getDevelopmentItems } from "./services";
+
+/* 
+to-do:
+    - fetch aws by chunks of 5 entries, getting filenames and their strings/values
+    - cache?
+    - implement redirect(/all items)
+    - add useReducer
+*/
 const ItemsPage = async() => {
 
-    // look into caching this - uncheck web browser 'disable' cache?
-    const getEntryData = async() => {
-        // add try-catch
-        const response_obj = await fetch("http://localhost:3000/api/getEntries", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-        });
-        return response_obj;
-    }
-
     // on page load
-    const testing_ret_obj = await getEntryData();
-    const {entries_dev_obj}: any = await testing_ret_obj.json();
+    const developmentDB_response = await getDevelopmentItems();
+    const {entries_dev_obj}: any = await developmentDB_response.json();
 
     return(
         // to-do: move styles.container into globals.css
         <div className = {styles.container}>
             
-            <p className = {styles.instruction}>Development configuration - all items</p>
+            <div className = {styles.header_section}>
+                <p>Development configuration - all items</p>
+            </div>
 
             <div className = {styles.items_container}>
 

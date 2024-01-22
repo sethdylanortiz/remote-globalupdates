@@ -2,8 +2,14 @@
 import { NextResponse } from "next/server";
 import { redirect } from "next/navigation"; // https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirect-function
 import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
-import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
 
+// services
+import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
+/*
+to-do:
+    - add try catch
+    - add redirect
+*/
 export type Item = {
     FileName: string,
     entry: string

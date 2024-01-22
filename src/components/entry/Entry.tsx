@@ -3,54 +3,13 @@ import React, { useState, useRef } from "react";
 import styles from "./entry.module.css";
 import Image from "next/image";
 import Button from "../button/Button";
-import { Editor } from "@monaco-editor/react";
 
 // icons
 import icon_file from "../../../public/icon_file.png";
-import icon_trash from "../../../public/icon_delete.png";
 
-const updateForm = async(curFileName: string, newFileName: string, curJSON: string, newJSON: string) => {
-    console.log("updateForm(), SAVE button pressed");
-
-    const [curFileName_trim, newFileName_trim] = [curFileName.trim(), newFileName.trim()];
-    const [curJSON_trim, newJSON_trim] = [curJSON.replace(/\s/g,""), newJSON.replace(/\s/g,"")];
-
-    if((curJSON_trim !== newJSON_trim) || (curFileName_trim !== newFileName_trim))
-    {
-        console.log("updateForm() change in JSON, curJSON_trim !== newJSON_trim");
-        // update/create entry if differences are noticed
-        const response_obj = await fetch("http://localhost:3000/api/updateEntry", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                newFileName: newFileName_trim,
-                newJSON: newJSON_trim
-            })
-        });
-        // delete old entry if new filename was set
-        if(curFileName_trim !== newFileName_trim)
-        {
-            const response_obj = await fetch("http://localhost:3000/api/deleteEntry", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    fileNameToDelete: curFileName_trim
-                })
-            });
-        }
-    }
-    else {
-        console.log("updateForm() curJSON == newJSON, curFileName == newFileName, ignore call" + "\n\n" + 
-                    "updateForm() curJSON_trim: \n" + curJSON_trim + "\n\n" + 
-                    "updateForm() newJSON_trim: \n" + newJSON_trim);
-    }
-    // on success, return notification to overwrite/setState temp str?
-    // this must be done since we wont re-call entire db like we do on initial page load
-}
+// services
+import { updateForm } from "../../app/items/services";
+import { Editor } from "@monaco-editor/react";
 
 // todo - after aws call/write - update, create new useState()/overwrite parsed_obj
 const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
@@ -113,19 +72,15 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
                                 mount ? setFormJSON(getJSONEditorValue()): setFormJSON(entry.entry);
                                 setShowEditor(!showEditor);
                             }}/>
-                            <div className = {styles.trash_button}>
-                                <Image
-                                    src = {icon_trash}
-                                    alt = "icon_trash.png"
-                                    width = {30}
-                                />
-                            </div>
+
+                            <Button text = "Delete" color = "red"/>
                         </div>
                     </div>
                 )}
 
                 {showEditor === true && (
 
+                    <div className = {styles.background_opacity}>
                     <div className = {styles.editor_container}>
 
                         <div className = {styles.filename_header}> 
@@ -142,7 +97,7 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
 
                         <Editor
                             className = {styles.editor}
-                            height = "75%"
+                            height = {400}
                             width = "90%"
                             theme = "light"
                             defaultLanguage = "json"
@@ -151,8 +106,8 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
                         />
 
                         <div className = {styles.save_close_buttons}>
-                            <Button text = "SAVE" color = "blue" handleClick = {() => updateForm(filename, newFileName, formJSON, getJSONEditorValue()) }/>
-                            <Button text = "CLOSE" color = "grey" handleClick = {() => {
+                            <Button text = "Save" color = "blue" handleClick = {() => updateForm(filename, newFileName, formJSON, getJSONEditorValue()) }/>
+                            <Button text = "Close" color = "grey" handleClick = {() => {
                                 console.log("CLOSE button clicked");
         
                                 // todo - fix this
@@ -163,6 +118,7 @@ const Entry = ({obj_str}: {obj_str: string}):JSX.Element => {
                             }}/> 
                         </div>
 
+                    </div>
                     </div>
                 )}
 

@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from "react";
 
-// servies
+// services
 import { getItemsDatabase } from "../merge/services";
 import { Item } from "../merge/services";
 

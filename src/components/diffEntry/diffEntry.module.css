@@ -15,7 +15,7 @@
     gap: 20px;
 }
 
-/* todo - chagne to global css */
+/* todo - change to global css */
 /* for entry */
 .item_container{
     width: 100%;
@@ -73,7 +73,7 @@
     height: auto;
 
     position: absolute;
-    margin: auto; /* look into this */
+    margin: auto; /*look into this*/
     /* text-align: center; */
     box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.6);
 
@@ -109,7 +109,6 @@
 .diff_container{
     width: 90%;
     height: 100%; /* auto */
-    background-color: blue;
 
     text-align: left;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.6);

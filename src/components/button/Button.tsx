@@ -30,7 +30,7 @@ const getColor = ({color}: {color: string}) => {
 const Button = ({text, color, handleClick}: {text: string, color: string, handleClick?: any}):JSX.Element => {
 
     const background_color = getColor({color});
-    const font_color = color == "blue" ? "white" : "black"; 
+    const font_color = (color == "blue" || color == "red") ? "white" : "black"; 
 
     return(
         <button
