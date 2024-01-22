@@ -27,7 +27,7 @@ const Navbar = () => {
                     height = {60}
                 />
                 <div className = {styles.header_name}>
-                    <h2>bad pirate</h2>
+                    <h2>Bad Pirate</h2>
                 </div>
            </Link>
 

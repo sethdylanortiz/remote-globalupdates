@@ -1,9 +1,9 @@
 import React from "react";
-import styles from "./page.module.css";
-import DiffEntry from "@/components/diffEntry/DiffEntry";
+import styles from "./mergepage.module.css";
 
 // services
 import { getDifferenceEntries, getItemsDatabase } from "./services";
+import DiffEntry from "@/components/diffEntry/DiffEntry";
 
 const MergePage = async() => {
     
@@ -29,7 +29,7 @@ const MergePage = async() => {
             
             { newItems.length == 0 && syncedItemsDiffentEntry.length == 0 && deletedItems.length == 0 ? 
                 <section className = {styles.no_changes_message_container}>
-                    <p>Looks like PRODUCTION database is up to date...</p>
+                    <p>Looks like the PRODUCTION database is up to date...</p>
                 </section>
                 :
                 <DiffEntry

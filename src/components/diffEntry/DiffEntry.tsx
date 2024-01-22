@@ -5,7 +5,7 @@ import styles from "./diffEntry.module.css";
 import Button from "../button/Button";
 
 // services
-import { mergeAll} from "@/app/merge/services";
+import { mergeAll } from "@/app/merge/services";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 
 // icons
@@ -153,45 +153,52 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
                         console.log("merge changes button clicked!");
                     }} />
                 </div>
-                {/* todo - remove this */}
-                {showConfimation == true ? 
-                    <div className = {styles.confirmation_container}  style = {{background: "#FFFFFF"}}>
-                        <p>Are you sure you want to merge this change into production?</p>
-                        <div className = {styles.confirmation_button_container}>
-                            <Button text = "Merge" color = "blue" handleClick = {() => {
-                                mergeAll({newItems, syncedItemsDiffentEntry, deletedItems});
-                                // todo - if fails, redirect to 404 first or throw some sort of error
-                                setShowMergeSuccess(true);
-                                setShowConfirmation(false);
-                                console.log("confirmation merge button clicked!");
-                            }}/>
-    
-                            <Button text = "Cancel" color = "grey" handleClick = {() => {
-                                setShowConfirmation(false);
-                                console.log("cancel merge button clicked!");
-                            }}/>
+                {/* todo - remove this ? */}
+                {showConfimation == true && 
+                    <div className = {styles.background_opacity}>
+                        <div className = {styles.confirmation_container}  style = {{background: "#FFFFFF"}}>
+                            <div className = {styles.confirmation_header}>
+                                <p>Merge confirmation</p>
+                            </div>
+                            <div className = {styles.confirmation_body}>
+                                <p>Are you sure you want to merge this change into production?</p>
+                            </div>
+                            <div className = {styles.confirmation_button_container}>
+                                <Button text = "Merge" color = "orange" handleClick = {() => {
+                                    mergeAll({newItems, syncedItemsDiffentEntry, deletedItems});
+                                    setShowMergeSuccess(true);
+                                    setShowConfirmation(false);
+                                    console.log("confirmation merge button clicked!");
+                                }}/>
+                                <Button text = "Cancel" color = "grey" handleClick = {() => {
+                                    setShowConfirmation(false);
+                                    console.log("cancel merge button clicked!");
+                                }}/>
+                            </div>
                         </div>
                     </div>
-                : null}
-                {showMergeSuccess == true ? 
-                    <div className = {styles.confirmation_container}  style = {{background: "#def8d2", borderWidth: "4px", borderColor: "#65a657"}}>
-                        <div className = {styles.confirmation_body}>
-                            <Image
-                                    src = {icon_checkmark}
-                                    alt = "icon_checkmark.png"
-                                    height = {40}
-                            />
-                            <p>Completed. Changes have successfully been merged into PRODUCTION</p>
-                        </div>
+                }
+                {showMergeSuccess == true && 
+                    <div className = {styles.background_opacity}>
+                        <div className = {styles.confirmation_container}  style = {{background: "#def8d2", borderWidth: "4px", borderColor: "#65a657"}}>
+                            <div className = {styles.confirmation_body}>
+                                <Image
+                                        src = {icon_checkmark}
+                                        alt = "icon_checkmark.png"
+                                        height = {40}
+                                />
+                                <p>Completed. Changes have successfully been merged into PRODUCTION</p>
+                            </div>
 
-                        <div className = {styles.confimration_success_footer}>
-                            <Button text = "Close" color = "grey" handleClick = {() => {
-                                handleMergeComplete();
-                            }}/>
+                            <div className = {styles.confimration_success_footer}>
+                                <Button text = "Close" color = "grey" handleClick = {() => {
+                                    handleMergeComplete();
+                                }}/>
+                            </div>
                         </div>
                     </div>
-                : null}
-                {showEditor == true ?
+                }
+                {showEditor == true &&
                     <section className = {styles.editor_container}>
 
                         <div className = {styles.editor_text}> 
@@ -232,7 +239,7 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
                         </div>
 
                     </section>
-                : null}
+                }
 
             </div>
         );

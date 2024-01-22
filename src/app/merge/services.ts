@@ -4,18 +4,18 @@ import { redirect } from "next/navigation"; // https://nextjs.org/docs/app/build
 import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
 import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
 
-type Item = {
+export type Item = {
     FileName: string,
     entry: string
 };
-type Items = [Item];
+type Items = Item[];
 
 type SyncedItem = {
     FileName: string,
     dev_entry: string,
     prod_entry: string
 };
-type SycnedItems = [SyncedItem];
+type SycnedItems = SyncedItem[];
 
 const getItemsDatabase = async() => {
     console.log("\n\n" + "inside services.ts, getItemsDatabase()");
@@ -41,40 +41,6 @@ const getItemsDatabase = async() => {
             success: false,
         });
     }
-}
-
-const mergeAll = async({newItems, syncedItemsDiffentEntry, deletedItems}: {newItems: Items, syncedItemsDiffentEntry: SycnedItems, deletedItems: Items}) => {
-    console.log("services.ts, inside mergeAll()! ");
-
-    var item_type_index = "newItems";
-    try{
-        newItems.map(async(item: Item) => {
-            await updateEntryDB(item.FileName, item.entry, "production");
-            console.log(`successfully updated ${item.FileName}'s Item!`);
-        });
-        revalidatePath("/merge");  // update cached items/entries
-
-        item_type_index = "syncedItemsDiffentEntry";
-        syncedItemsDiffentEntry.map(async(item: SyncedItem) => {
-            await updateEntryDB(item.FileName, item.dev_entry, "production");
-            console.log(`successfully updated ${item.FileName}'s Item!`);
-        });
-        revalidatePath("/merge");  // update cached items/entries
-
-        item_type_index = "deletedItems";
-        deletedItems.map(async(item: Item) => {
-            await deleteEntryDB(item.FileName, "production");
-            console.log(`successfully updated ${item.FileName}'s Item!`);
-        });
-        revalidatePath("/merge");  // update cached items/entries
-
-    }catch(error){
-        console.log("services.ts ERROR handleMerge(), error: " + error);
-        console.log("services.ts ERROR handleMerge(), item_type_index: " + item_type_index);
-    };
-
-    // revalidatePath("/merge");  // update cached items/entries
-    console.log("end of mergeAll()!");
 }
 
 // compare objects, find differences - to be mapped and displayedmain.ts(31,31): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ filename: string; entry: string; }'.
@@ -126,4 +92,39 @@ const getDifferenceEntries = async(dev_obj_str: string, prod_obj_str: string) =>
     return(JSON.stringify({newItems, syncedItemsDiffentEntry, deletedItems}));
 }
 
-export { getDifferenceEntries, getItemsDatabase, mergeAll}
+const mergeAll = async({newItems, syncedItemsDiffentEntry, deletedItems}: {newItems: Items, syncedItemsDiffentEntry: SycnedItems, deletedItems: Items}) => {
+    console.log("services.ts, inside mergeAll()! ");
+
+    var item_type_index = "newItems";
+    try{
+        newItems.map(async(item: Item) => {
+            await updateEntryDB(item.FileName, item.entry, "production");
+            console.log(`successfully updated ${item.FileName}'s Item!`);
+        });
+        revalidatePath("/merge");  // update cached items/entries
+
+        item_type_index = "syncedItemsDiffentEntry";
+        syncedItemsDiffentEntry.map(async(item: SyncedItem) => {
+            await updateEntryDB(item.FileName, item.dev_entry, "production");
+            console.log(`successfully updated ${item.FileName}'s Item!`);
+        });
+        revalidatePath("/merge");  // update cached items/entries
+
+        item_type_index = "deletedItems";
+        deletedItems.map(async(item: Item) => {
+            await deleteEntryDB(item.FileName, "production");
+            console.log(`successfully updated ${item.FileName}'s Item!`);
+        });
+        revalidatePath("/merge");  // update cached items/entries
+
+    }catch(error) {
+        console.log("services.ts ERROR handleMerge(), error: " + error);
+        console.log("services.ts ERROR handleMerge(), item_type_index: " + item_type_index);
+        redirect("/404");
+    };
+
+    // revalidatePath("/merge");  // update cached items/entries
+    console.log("end of mergeAll()!");
+}
+
+export { getDifferenceEntries, getItemsDatabase, mergeAll }

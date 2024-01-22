@@ -12,7 +12,7 @@ const getColor = ({color}: {color: string}) => {
         case "red":
             return "#E34127";
         case "blue":
-            return "#6991ff";
+            return "#498cf5";
         case "grey":
             return "#DEDEDE";
         case "green":
@@ -27,7 +27,10 @@ const getColor = ({color}: {color: string}) => {
 }
 
 // add href, logo if exists?, where to add onclick?
-const Button = ({text, color, handleClick}: {text: string, color: string, handleClick: any}):JSX.Element => {
+const Button = ({text, color, handleClick}: {text: string, color: string, handleClick?: any}):JSX.Element => {
+
+    const background_color = getColor({color});
+    const font_color = color == "blue" ? "white" : "black"; 
 
     return(
         <button
@@ -35,7 +38,8 @@ const Button = ({text, color, handleClick}: {text: string, color: string, handle
         style = {{
             // borderColor: "#2CB707",
             // borderWidth: "2px",
-            backgroundColor: getColor({color})
+            backgroundColor: background_color,
+            color: font_color
         }}
         onClick = {handleClick}
         >
