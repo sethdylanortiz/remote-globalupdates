@@ -7,19 +7,19 @@ import Link from "next/link";
 
 // styles
 import styles from "./navbar.module.css";
-import logo_badpirate from "../../../public/pirate-ship.png";
+import logo_badpirate from "../../../public/icon-pirate_ship.png";
 
 // to-do: change back to css from tailwind
 const Navbar = () => {
 
     const links = [
+        {name: "Home", href: "/"},
         {name: "All Items", href: "/items"},
         {name: "Merge", href: "/merge"}
     ];
 
     return(
         <nav className = {styles.container}>
-
             <Link className = {styles.logo_link} href = "/">
                 <Image
                     src = {logo_badpirate}
