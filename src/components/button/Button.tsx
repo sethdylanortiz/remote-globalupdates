@@ -6,9 +6,10 @@ to-do:
 import React from "react";
 import styles from "./button.module.css";
 
+type ButtonActions = ("submit" | "reset" | "button" | undefined);
+
 const getColor = ({color}: {color: string}) => {
-    switch(color)
-    {
+    switch(color){
         case "red":
             return "#E34127";
         case "blue":
@@ -16,7 +17,7 @@ const getColor = ({color}: {color: string}) => {
         case "grey":
             return "#DEDEDE";
         case "green":
-            return "#2CB707";
+            return "#4CC42C";
         case "yellow":
             return "yellow";
         case "orange":
@@ -27,21 +28,22 @@ const getColor = ({color}: {color: string}) => {
 }
 
 // add href, logo if exists?, where to add onclick?
-const Button = ({text, color, handleClick}: {text: string, color: string, handleClick?: any}):JSX.Element => {
+const Button = ({text, color, handleClick, buttonType}: {text: string, color: string, handleClick?: any, buttonType?: ButtonActions}):JSX.Element => {
 
     const background_color = getColor({color});
-    const font_color = (color == "blue" || color == "red") ? "white" : "black"; 
+    const font_color = (color == "blue" || color == "red" || color == "green") ? "white" : "black"; 
 
     return(
         <button
-        className = {styles.button_container}
-        style = {{
-            // borderColor: "#2CB707",
-            // borderWidth: "2px",
-            backgroundColor: background_color,
-            color: font_color
-        }}
-        onClick = {handleClick}
+            className = {styles.button_container}
+            style = {{
+                // borderColor: "#2CB707",
+                // borderWidth: "2px",
+                backgroundColor: background_color,
+                color: font_color
+            }}
+            type = {buttonType}
+            onClick = {handleClick}
         >
             {text}
         </button>

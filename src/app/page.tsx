@@ -14,7 +14,7 @@ export default function Home() {
             <div className = {styles.image_navigation_container}>
 
                 <div className = {styles.selection}>
-                    <Link href = "/items">
+                    <Link href = "/items" className = {styles.link}>
                         <Image
                             className= {styles.image_container}
                             src = {image_itemsPage}

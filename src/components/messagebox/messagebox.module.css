@@ -1,0 +1,18 @@
+.container{
+    position: absolute;
+    width: auto;
+    max-width: 40%;
+    height: auto;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 50px;
+    padding-bottom: 25px;
+
+    gap: 25px;
+
+    border-width: 4px;
+
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.6);
+}

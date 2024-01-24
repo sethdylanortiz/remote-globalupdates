@@ -14,7 +14,7 @@ const Navbar = () => {
 
     const links = [
         {name: "Home", href: "/"},
-        {name: "All Items", href: "/items"},
+        {name: "Development", href: "/items"},
         {name: "Merge", href: "/merge"}
     ];
 

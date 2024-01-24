@@ -19,6 +19,8 @@ const ItemsPage = async() => {
     // on page load
     const developmentDB_response = await getDevelopmentItems();
     const {entries_dev_obj}: any = await developmentDB_response.json();
+    console.log("ItemsPage.tsx, entries_dev_obj: ");
+    console.log(entries_dev_obj);
 
     return(
         // to-do: move styles.container into globals.css
@@ -32,7 +34,7 @@ const ItemsPage = async() => {
 
                 {/* pass all items */}
                 <Entry
-                    obj_str = {JSON.stringify(entries_dev_obj.Items)}
+                    dev_obj_str = {JSON.stringify(entries_dev_obj.Items)}
                 />
 
             </div>

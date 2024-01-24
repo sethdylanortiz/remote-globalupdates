@@ -20,14 +20,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className = "h-full">
+    <html lang="en">
 
-        <body className = "h-full font-sans">
+        <body>
 
-            <main className = "min-h-screen">
+            <main>
 
                 <Navbar/>
-                    {children}
+                {children}
 
             </main>
         </body>

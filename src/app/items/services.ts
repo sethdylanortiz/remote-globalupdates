@@ -11,11 +11,11 @@ to-do:
     - add redirect
     - change schema to Filename, Entry
 */
-type Item = {
-    Filename: string,
-    Entry: string
+export type Item = {
+    FileName: string,
+    entry: string
 };
-type Items = Item[];
+export type Items = Item[];
 
 // send response to page.tsx - not <Entry> client component
 const getDevelopmentItems = async() => {
@@ -72,4 +72,17 @@ const updateForm = async(curFileName: string, newFilename: string, curJSON: stri
     }
 };
 
-export { getDevelopmentItems, updateForm }
+
+const deleteItem = async(filename: string) => {
+    console.log("deleteItem(), delete button pressed!");
+
+    try{
+        await deleteEntryDB(filename, "development");
+        console.log("Deleted " + `${filename}` + "'s Item successfully!");
+        revalidatePath("/items");
+    }catch(error){
+        redirect("/404");
+    }
+
+};
+export { getDevelopmentItems, updateForm, deleteItem}
