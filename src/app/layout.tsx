@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import StateContextProvider from './items/itemspage-context';
 
 // components
 import Navbar from '@/components/navbar/Navbar';
@@ -21,14 +22,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-
         <body>
-
             <main>
 
-                <Navbar/>
-                {children}
-
+                <StateContextProvider>
+                    <Navbar/>
+                    {children}
+                </StateContextProvider>
+                
             </main>
         </body>
     </html>

@@ -12,14 +12,8 @@ import { Editor } from "@monaco-editor/react";
 import Button from "../button/Button";
 import Messagebox from "../messagebox/Messagebox";
 
-// todo - re-evaluate/check forms (!state) is working properly?
-// todo - find a better way to handle so many useState()
-// todo - add useReducer?
-// todo - after aws call/write - update, create new useState()/overwrite parsed_obj
+// todo - find a better way to handle so many useState(), add useReducer?
 const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
-
-    // for deletion
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     // for editor state
     const [showEditor, setShowEditor] = useState(false);
@@ -28,6 +22,7 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
     const [formError, setFormError] = useState("");
     const [errorBox, showErrorBox] = useState(false);
     const [successBox, showSuccessBox] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     // for textarea filename
     const [filename, setFileName] = useState<any>(null);
@@ -36,62 +31,60 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
     // for json <Editor/> component
     const [formJSON, setFormJSON] = useState<any>(null);
     const [mount, setMount] = useState(false); // todo - make sure this works
-    const [objectIndex, setObjectIndex] = useState<any>(null); // todo - fix
     const editorRef = useRef(null);
     const handleEditorDidMount = (editor: any, monaco: any) => {
         console.log("formJSON handleEditorDidMount()");
         editorRef.current = editor;
-        setMount(!mount);
+        setMount(true);
         // getEditorValue();
     }
     const handleEditorUnmount = () => {
         console.log("formJSON handleEditorUnmount()");
-        setMount(!mount);
+        setMount(false);
         setFormJSON(null);
     }
     const getJSONEditorValue = ():string => {
         // todo - fix this error
         return editorRef.current.getValue();
     }
-
-    // todo - move somewhere else
-    const handleDelete = () => {
-        console.log("inside handleDelete()!");
-        setShowDeleteConfirm(true);
-    }
-
+    
     try {
         const parsed_obj = JSON.parse(dev_obj_str);
 
-        // todo - move somewhere else
         const handleSave = () => {
             var inputHasError = false;
-
+            
             // check if item already exists - if so, reject and render
-            if(parsed_obj.some((item: Item) => item.FileName === newFileName)){
+            if(filename == "" && parsed_obj.some((item: Item) => item.FileName === newFileName)){
                setFormError(prev => prev + `Item with ${newFileName}'s Filename already exists.\n\n`);
                inputHasError = true;
             }
             
             // check if valid json
             const jsonEditorValue = getJSONEditorValue();
+            const [curJSON_trim, newJSON_trim] = [jsonEditorValue.replace(/\s/g,""), formJSON.replace(/\s/g,"")];
+
+            if(curJSON_trim == newJSON_trim && filename == newFileName){
+                setFormError(prev => prev + "Please edit the current item before saving\n");
+                inputHasError = true;
+            }
             try{
                 JSON.parse(jsonEditorValue);
             }catch(error){
                 setFormError(prev => prev + error);
                 inputHasError = true;
             }
-
+    
             if(inputHasError){
-                showErrorBox(!errorBox);
+                showErrorBox(true);
             }
             else{
+                updateForm(filename, newFileName, formJSON, jsonEditorValue);
+                setFileName(newFileName);
+                setFormJSON(jsonEditorValue);
                 showSuccessBox(true);
-                console.log("SUCCESS BOX!: " + successBox);
-                updateForm(filename, newFileName, formJSON, getJSONEditorValue());
             }
         }
-
         return(
             <div className = {styles.container}>
 
@@ -100,38 +93,33 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
                         
                         setFileName("");
                         mount ? setFormJSON(getJSONEditorValue()): setFormJSON("{}");
-                        setShowEditor(!showEditor);
+                        setShowEditor(true);
                     }}/>
                 </div>
 
-                {parsed_obj.map((entry: any, index: number) => 
-                    <div className = {styles.entry} key = {entry.FileName}>
+                {parsed_obj.map((item: any, index: number) => 
+                    <div className = {styles.entry} key = {item.FileName}>
                         <div className = {styles.file}>
                             <Image
                                 src = {icon_file}
                                 alt = "icon_file.png"
                                 width = {40}
                             />
-                            <p>{entry.FileName}</p>
+                            <p>{item.FileName}</p>
                         </div>
 
                         <div className = {styles.meta_buttons}>
                             <Button text = "Edit" color = "blue" handleClick = {() => {
-                                setObjectIndex(index);
-                                console.log("index: " + index);
-                                console.log("objectIndex: " + objectIndex);
-
-                                console.log("Edit button clicked");
                                 // todo - disable all other buttons
-                                setFileName(entry.FileName);
-                                setNewFileName(entry.FileName);
-                                mount ? setFormJSON(getJSONEditorValue()): setFormJSON(entry.entry);
-                                setShowEditor(!showEditor);
+                                setFileName(item.FileName);
+                                setNewFileName(item.FileName);
+                                // mount ? setFormJSON(getJSONEditorValue()): setFormJSON(item.entry);
+                                setFormJSON(item.entry);
+                                setShowEditor(true);
                             }}/>
-                            {/* to-do: pop up confirmation window */}
                             <Button text = "Delete" color = "red" handleClick = {() => {
-                                setFileName(entry.FileName);
-                                handleDelete();
+                                setFileName(item.FileName);
+                                setShowDeleteConfirm(true);
                             }}/>
                         </div>
                     </div>
@@ -169,46 +157,36 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
 
                         <div className = {styles.save_close_buttons}>
                             <Button buttonType = "submit" text = "Save" color = "blue"/>
-                            <Button text = "Close" color = "grey" handleClick = {() => {
-                                console.log("CLOSE button clicked");
-        
-                                // todo - fix this
-                                // console.log("parsed_obj[filename].entry: " + parsed_obj[objectIndex].entry);
+                            <Button text = "Close" color = "grey" handleClick = {() => {        
                                 handleEditorUnmount();
                                 setNewFileName(null);
-                                setShowEditor(!showEditor);
+                                setShowEditor(false);
                             }}/> 
                         </div>
                     </form>
 
                         {/* for form Error */}
                         {errorBox == true && (
-                            <div className = {styles.error_box_container}>
-                                <p>{formError}</p>
-
-                                <div>
+                            <Messagebox type = "error" message = {formError} 
+                                buttons = {[
+                                    <Button text = "Dismiss" color = "grey" handleClick = {() => {
+                                        setFormError("");
+                                        showErrorBox(false);
+                                    }}/>
+                                ]}
+                            />
+                        )}
+                        {successBox == true && (
+                            <Messagebox type = "success" message = {`Success adding "${newFileName}" into Development database`} 
+                                buttons = {[
                                     <Button text = "Dismiss" color = "grey" handleClick = {() => {
                                         // handleEditorUnmount();
                                         // setNewFileName(null);
-                                        setFormError("");
-                                        showErrorBox(!errorBox);
-                                    }}/>
-                                </div>
-                            </div>
-                        )}
-                        {successBox == true && (
-                            <div className = {styles.success_box_container}>
-                                <p>Success adding {newFileName} into Development database</p>
-
-                                <div>
-                                    <Button text = "Dismiss" color = "grey" handleClick = {() => {
-                                        handleEditorUnmount();
-                                        setNewFileName(null);
-                                        setShowEditor(!showEditor);
+                                        // setShowEditor(false);
                                         showSuccessBox(false);
                                     }}/>
-                                </div>
-                            </div>
+                                ]}
+                            />
                         )}
                         
                     </div>
@@ -216,32 +194,22 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
                 )}
                 <div>
                     {showDeleteConfirm == true && (
-                        <div className = {styles.background_opacity}>
-                        <div className = {styles.delete_confirmation_container}>
-
-                            <p> Are you sure you want to delete this Item from Development? </p>
-                            
-                            <div className = {styles.footer_buttons_container}>
+                        <Messagebox type = "confirmation" message = "Are you sure you want to delete this Item from Development?" 
+                            buttons = {[
                                 <Button text = "Delete" color = "orange" handleClick = {() => {
                                     deleteItem(filename);
                                     setFileName(null);
                                     setShowDeleteConfirm(false);
                                     // render delete success box                                    
-                                }}/>
+                                }}/>,
                                 <Button text = "Close" color = "grey" handleClick = {() => {
                                     setFileName(null);
                                     setShowDeleteConfirm(false);
                                 }}/>
-                            </div>
-                        </div>
-                        </div>
+                            ]}
+                        />
                     )}
 
-                </div>
-
-
-                <div>
-                    <Messagebox type = "success" message = "Success adding Item into Development"/>
                 </div>
 
             </div>

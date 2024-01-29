@@ -19,9 +19,6 @@ const doc_client = DynamoDBDocumentClient.from(database_client);
 // method to GET all items [for display] - move to chunks
 // what order does it get it in? will it mix materials + foods?
 const getEntryDB = async(config) => {
-
-    console.log("\n" + "dynamodb.js - inside getEntryDB()");
-
     const tablename = config === "production"? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT
     const params = {
         TableName: tablename
@@ -34,11 +31,6 @@ const getEntryDB = async(config) => {
 }
 
 const updateEntryDB = async(filename, newJSON, config) => {
-    console.log("\n" + "dynamodb.js - inside updateEntryDB()");
-    console.log("dynamodb.js - filename: " + filename);
-    console.log("dynamodb.js - typeof filename: " + typeof filename);
-    console.log("dynamodb.js - newJSON: " + newJSON);
-    console.log("dynamodb.js - typeof newJSON: " + typeof newJSON);
 
     const tablename = (config === "production") ? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT;
     const params = {
@@ -65,8 +57,6 @@ const updateEntryDB = async(filename, newJSON, config) => {
 }
 
 const deleteEntryDB = async(filename, config) => {
-    console.log("\n" + "dynamodb.js - inside deleteEntryDB()");
-    console.log("dynamodb.js - filename: " + filename);
 
     const tablename = (config === "production") ? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT;
     const params = {

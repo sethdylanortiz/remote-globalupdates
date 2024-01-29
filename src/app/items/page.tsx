@@ -11,8 +11,9 @@ import { getDevelopmentItems } from "./services";
 to-do:
     - fetch aws by chunks of 5 entries, getting filenames and their strings/values
     - cache?
-    - implement redirect(/all items)
     - add useReducer
+    - CHANGE - to map over aws call and create an invidual entry -> don't send entire string to <entry>
+    - add <suspense>
 */
 const ItemsPage = async() => {
 

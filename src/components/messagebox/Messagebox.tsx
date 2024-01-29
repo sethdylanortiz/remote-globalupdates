@@ -5,9 +5,9 @@ const getTheme = (type: string) =>{
     // return [background-color, border-color]
     switch(type){
         case "error":
-            return ["#FF7A64", "#E73C20"];
+            return ["#FFF0ED", "#EB6550"];
         case "success":
-            return ["#def8d2", "#65a657"];
+            return ["#EAFFE0", "#65a657"];
         case "confirmation":
             return ["white", "white"];
         default:
@@ -15,18 +15,25 @@ const getTheme = (type: string) =>{
     };
 }
 
-const Messagebox = ({type, message}: {type: string, message: string}) => {
+const Messagebox = ({type, message, buttons}: {type: string, message: string, buttons: any}) => {
     return (
-        // add background opacity outer div?
-        <div className = {styles.container} 
-            style = {{
-                background: getTheme(type)[0],
-                borderColor: type == "confirmation" ? "" : getTheme(type)[1],
-                borderWidth: type == "confirmation" ? "0px": "4px"
-            }}>
-            <p>{message}</p>
-            {/* add buttons */}
-            {/* return state change to parent component? */}
+        <div className = {styles.background_opacity}> 
+            <div className = {styles.container} 
+                style = {{
+                    background: getTheme(type)[0],
+                    borderColor: type == "confirmation" ? "" : getTheme(type)[1],
+                    borderWidth: type == "confirmation" ? "0px": "3px"
+                }}>
+                <p>{message}</p>
+                
+                <div className = {styles.footer_buttons_container}>
+                    {buttons.map((button: any, index: any) =>
+                         <div key = {index}>
+                            {button}
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
