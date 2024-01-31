@@ -138,9 +138,6 @@ const DiffEntry = ({newItems, syncedItemsDiffentEntry, deletedItems}:
 
                     <div className = {styles.diff_container}>
                         <ReactDiffViewer 
-                            styles = {{
-                                
-                            }}
                             compareMethod = {DiffMethod.WORDS}
                             splitView = {false}
                             oldValue = {originalJSON == null ? undefined : JSON.stringify(JSON.parse(originalJSON), null, 4)}

@@ -27,11 +27,9 @@ const getDevelopmentItems = async() => {
     }
 };
 
-const updateForm = async(curFileName: string, newFilename: string, curJSON: string, newJSON: string) => {
+// const updateForm = async(curFileName: string, newFilename: string, curJSON: string, newJSON: string) => {
+const updateForm = async(curFileName_trim: string, newFileName_trim: string, curJSON_trim: string, newJSON_trim: string) => {
 
-    // to-do: what happens if value contains a " "?
-    const [curFileName_trim, newFileName_trim] = [curFileName.trim(), newFilename.trim()];
-    const [curJSON_trim, newJSON_trim] = [curJSON.replace(/\s/g,""), newJSON.replace(/\s/g,"")];
     console.log("SERVICES.TSX, UPDATEFORM, newFileName_trim: " + newFileName_trim);
     console.log("SERVICES.TSX, UPDATEFORM, curFileName_trim: " + curFileName_trim);
 

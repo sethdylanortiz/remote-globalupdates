@@ -53,16 +53,17 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
             var inputHasError = false;
             
             // check if item already exists - if so, reject and render
-            if(filename == "" && parsed_obj.some((item: Item) => item.FileName === newFileName)){
-               setFormError(prev => prev + `Item with ${newFileName}'s Filename already exists.\n\n`);
+            // check if valid json - remove whitespace
+            const jsonEditorValue = getJSONEditorValue();
+            const [curJSON_trim, newJSON_trim] = [JSON.stringify(JSON.parse(jsonEditorValue)), JSON.stringify(JSON.parse(formJSON))];
+            const [curFileName_trim, newFileName_trim] = [filename.trim(), newFileName.trim()];
+
+            if(curFileName_trim == "" && parsed_obj.some((item: Item) => item.FileName === newFileName_trim)){
+               setFormError(prev => prev + `Item with ${newFileName_trim}'s Filename already exists.\n\n`);
                inputHasError = true;
             }
             
-            // check if valid json
-            const jsonEditorValue = getJSONEditorValue();
-            const [curJSON_trim, newJSON_trim] = [jsonEditorValue.replace(/\s/g,""), formJSON.replace(/\s/g,"")];
-
-            if(curJSON_trim == newJSON_trim && filename == newFileName){
+            if(curJSON_trim == newJSON_trim && curFileName_trim == newFileName_trim){
                 setFormError(prev => prev + "Please edit the current item before saving\n");
                 inputHasError = true;
             }
@@ -77,8 +78,8 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
                 showErrorBox(true);
             }
             else{
-                updateForm(filename, newFileName, formJSON, jsonEditorValue);
-                setFileName(newFileName);
+                updateForm(curFileName_trim, newFileName_trim, newJSON_trim, curJSON_trim);
+                setFileName(newFileName_trim);
                 setFormJSON(jsonEditorValue);
                 showSuccessBox(true);
             }
