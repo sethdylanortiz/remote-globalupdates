@@ -1,14 +1,16 @@
 /* move contianer background-color to globals.css */
 .container{
-    background-color: #EBEBEB;
+    /* background-color: #EBEBEB; */
     width: 100%;
-    height: 100vh;
+    height: auto;
 
     margin-left: auto;
     margin-right: auto;
 
     padding-top: 75px;
     /* padding-bottom: 10px; */
+    top: 0;
+    bottom: 0;
 }
 .image_navigation_container{
     width: 100%;

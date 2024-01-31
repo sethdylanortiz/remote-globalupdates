@@ -1,8 +1,7 @@
 import React from "react";
 import styles from "./itemspage.module.css";
-import Entry from "@/components/entry/Entry"; 
-// todo - <Add/New> Entry button functionality:
-import Button from "@/components/button/Button";
+import Entry from "@/app/items/entry/Entry"; 
+import { Suspense } from 'react'
 
 // services
 import { getDevelopmentItems } from "./services";
@@ -16,12 +15,9 @@ to-do:
     - add <suspense>
 */
 const ItemsPage = async() => {
-
     // on page load
-    const developmentDB_response = await getDevelopmentItems();
-    const {entries_dev_obj}: any = await developmentDB_response.json();
-    console.log("ItemsPage.tsx, entries_dev_obj: ");
-    console.log(entries_dev_obj);
+    const {entries_dev_obj} = await getDevelopmentItems();
+    // console.log("ItemsPage.tsx, entries_dev_obj: "); console.log(entries_dev_obj);
 
     return(
         // to-do: move styles.container into globals.css
@@ -34,9 +30,11 @@ const ItemsPage = async() => {
             <div className = {styles.items_container}>
 
                 {/* pass all items */}
-                <Entry
-                    dev_obj_str = {JSON.stringify(entries_dev_obj.Items)}
-                />
+                <Suspense fallback = {<p>Loading...</p>}>
+                    <Entry
+                        dev_obj_str = {JSON.stringify(entries_dev_obj.Items)}
+                    />
+                </Suspense>
 
             </div>
 

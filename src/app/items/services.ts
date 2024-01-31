@@ -1,7 +1,6 @@
 "use server";
 import { redirect } from "next/navigation"; // https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirect-function
 import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
-import { NextResponse } from "next/server";
 
 // services
 import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
@@ -21,14 +20,9 @@ export type Items = Item[];
 const getDevelopmentItems = async() => {
     try{
         const items_dev_obj = await getEntryDB("development");
-
-        return NextResponse.json({
-            responseMsg: ["services.ts SUCCESS getEntryDB()"],
-            entries_dev_obj: items_dev_obj,
-            success: true,
-        });
+        return {entries_dev_obj: items_dev_obj}
     }catch(error){
-        // redirect to error page
+        console.log("services.ts getDevelopmentItems() error: " + error);
         redirect("/404");
     }
 };
@@ -63,7 +57,7 @@ const updateForm = async(curFileName: string, newFilename: string, curJSON: stri
                 console.log("Deleted " + `${curFileName_trim}` + "'s Item successfully!");
                 revalidatePath("/items");
             }catch(error){
-                console.log("error: " + error);
+                console.log("updateForm() error: " + error);
                 redirect("/404");
             }
         }
@@ -84,6 +78,7 @@ const deleteItem = async(filename: string) => {
         console.log("Deleted " + `${filename}` + "'s Item successfully!");
         revalidatePath("/items");
     }catch(error){
+        console.log("deleteItem() error: " + error);
         redirect("/404");
     }
 

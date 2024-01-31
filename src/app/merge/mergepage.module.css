@@ -1,15 +1,10 @@
 .container{
-    /* background-color: #FEE2FF; */
-    background-color: #EBEBEB;
     /* max-width: 1280px; */
     width: 100%;
-    height: 100vh;
+    height: auto;
 
     margin-left: auto;
     margin-right: auto;
-
-    /* padding-top: 10px; */
-    padding-bottom: 10px;
 }
 .header_section{
     padding-top: 30px;

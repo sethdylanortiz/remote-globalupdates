@@ -1,16 +1,13 @@
 "use client";
 import React, { useState, useRef } from "react";
 import styles from "./entry.module.css";
-import Image from "next/image";
-
-// icons
-import icon_file from "../../../public/icon_file.png";
 
 // services
-import { updateForm, deleteItem, Item} from "../../app/items/services";
+import { updateForm, deleteItem, Item} from "../services";
 import { Editor } from "@monaco-editor/react";
-import Button from "../button/Button";
-import Messagebox from "../messagebox/Messagebox";
+import Button from "../../../components/button/Button";
+import Messagebox from "../../../components/messagebox/Messagebox";
+import EntryCard from "@/components/entrycard/EntryCard";
 
 // todo - find a better way to handle so many useState(), add useReducer?
 const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
@@ -51,6 +48,7 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
     try {
         const parsed_obj = JSON.parse(dev_obj_str);
 
+        // todo: move this somewhere else
         const handleSave = () => {
             var inputHasError = false;
             
@@ -98,74 +96,59 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
                 </div>
 
                 {parsed_obj.map((item: any, index: number) => 
-                    <div className = {styles.entry} key = {item.FileName}>
-                        <div className = {styles.file}>
-                            <Image
-                                src = {icon_file}
-                                alt = "icon_file.png"
-                                width = {40}
-                            />
-                            <p>{item.FileName}</p>
-                        </div>
-
-                        <div className = {styles.meta_buttons}>
-                            <Button text = "Edit" color = "blue" handleClick = {() => {
+                    <EntryCard key = {item.FileName} filename = {item.FileName} type = "none" buttons = {[
+                        <Button text = "Edit" color = "blue" handleClick = {() => {
                                 // todo - disable all other buttons
                                 setFileName(item.FileName);
                                 setNewFileName(item.FileName);
                                 // mount ? setFormJSON(getJSONEditorValue()): setFormJSON(item.entry);
                                 setFormJSON(item.entry);
                                 setShowEditor(true);
-                            }}/>
-                            <Button text = "Delete" color = "red" handleClick = {() => {
-                                setFileName(item.FileName);
-                                setShowDeleteConfirm(true);
-                            }}/>
-                        </div>
-                    </div>
+                        }}/>,
+                        <Button text = "Delete" color = "red" handleClick = {() => {
+                            setFileName(item.FileName);
+                            setShowDeleteConfirm(true);
+                        }}/>
+                    ]}
+                    />
                 )}
 
                 {/* move to another component? */}
                 {showEditor === true && (
                     // move to another component
                     <div className = {styles.background_opacity}>
-                    <form action = {handleSave} className = {styles.editor_container}>
+                        <form action = {handleSave} className = {styles.editor_container}>
+                            <div className = {styles.filename_header}> 
+                                <p>Current file</p>
+                            </div>
+                            <input
+                                className = {styles.filename_textarea}
+                                type = "text" 
+                                defaultValue = {filename}
+                                onChange = {(event) => setNewFileName(event.target.value)}
+                                placeholder = "Enter Filename"
+                                required
+                                minLength = {3}
+                            />
+                            <Editor
+                                className = {styles.editor}
+                                height = {400}
+                                width = "90%"
+                                theme = "light"
+                                defaultLanguage = "json"
+                                defaultValue = {JSON.stringify(JSON.parse(formJSON), null, 4)}
+                                onMount = {handleEditorDidMount}
+                            />
+                            <div className = {styles.save_close_buttons}>
+                                <Button buttonType = "submit" text = "Save" color = "blue"/>
+                                <Button text = "Close" color = "grey" handleClick = {() => {        
+                                    handleEditorUnmount();
+                                    setNewFileName(null);
+                                    setShowEditor(false);
+                                }}/> 
+                            </div>
+                        </form>
 
-                        <div className = {styles.filename_header}> 
-                            <p>Current file</p>
-                        </div>
-
-                        <input
-                            className = {styles.filename_textarea}
-                            type = "text" 
-                            defaultValue = {filename}
-                            onChange = {(event) => setNewFileName(event.target.value)}
-                            placeholder = "Enter Filename"
-                            required
-                            minLength = {3}
-                        />
-
-                        <Editor
-                            className = {styles.editor}
-                            height = {400}
-                            width = "90%"
-                            theme = "light"
-                            defaultLanguage = "json"
-                            defaultValue = {JSON.stringify(JSON.parse(formJSON), null, 4)}
-                            onMount = {handleEditorDidMount}
-                        />
-
-                        <div className = {styles.save_close_buttons}>
-                            <Button buttonType = "submit" text = "Save" color = "blue"/>
-                            <Button text = "Close" color = "grey" handleClick = {() => {        
-                                handleEditorUnmount();
-                                setNewFileName(null);
-                                setShowEditor(false);
-                            }}/> 
-                        </div>
-                    </form>
-
-                        {/* for form Error */}
                         {errorBox == true && (
                             <Messagebox type = "error" message = {formError} 
                                 buttons = {[
@@ -180,9 +163,6 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
                             <Messagebox type = "success" message = {`Success adding "${newFileName}" into Development database`} 
                                 buttons = {[
                                     <Button text = "Dismiss" color = "grey" handleClick = {() => {
-                                        // handleEditorUnmount();
-                                        // setNewFileName(null);
-                                        // setShowEditor(false);
                                         showSuccessBox(false);
                                     }}/>
                                 ]}
@@ -192,15 +172,14 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
                     </div>
 
                 )}
-                <div>
-                    {showDeleteConfirm == true && (
+                    
+                {showDeleteConfirm == true && (
+                    <div>
                         <Messagebox type = "confirmation" message = "Are you sure you want to delete this Item from Development?" 
                             buttons = {[
                                 <Button text = "Delete" color = "orange" handleClick = {() => {
                                     deleteItem(filename);
-                                    setFileName(null);
-                                    setShowDeleteConfirm(false);
-                                    // render delete success box                                    
+                                    showSuccessBox(true);
                                 }}/>,
                                 <Button text = "Close" color = "grey" handleClick = {() => {
                                     setFileName(null);
@@ -208,10 +187,19 @@ const Entry = ({dev_obj_str}: {dev_obj_str: string}):JSX.Element => {
                                 }}/>
                             ]}
                         />
-                    )}
-
-                </div>
-
+                        {successBox == true && (
+                            <Messagebox type = "success" message = {`Success deleting "${filename}" from Development database`} 
+                                buttons = {[
+                                    <Button text = "Dismiss" color = "grey" handleClick = {() => {
+                                        setFileName(null);
+                                        showSuccessBox(false);
+                                        setShowDeleteConfirm(false);
+                                    }}/>
+                                ]}
+                            />
+                        )}
+                    </div>
+                )}
             </div>
         
         );

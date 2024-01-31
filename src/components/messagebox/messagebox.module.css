@@ -1,10 +1,10 @@
 .container{
     position: absolute;
     width: auto;
-    max-width: 40%;
+    max-width: 50%;
     height: auto;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 75px;
+    padding-right: 75px;
     padding-top: 50px;
     padding-bottom: 25px;
 
@@ -15,6 +15,7 @@
     box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.6);
 }
 
+/* move background_opacity to globals.css */
 .background_opacity{
     background-color: rgba(255, 255, 255, 0.80);
     width: 100%;
@@ -31,7 +32,6 @@
     align-items: center;
     justify-content: center;
 }
-
 .footer_buttons_container{
     display: flex;
     flex-direction: row;

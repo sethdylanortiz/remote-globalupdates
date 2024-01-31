@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import StateContextProvider from './items/itemspage-context';
+import styles from "./layoutstyles.module.css";
 
 // components
 import Navbar from '@/components/navbar/Navbar';
@@ -21,15 +22,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang = "en">
         <body>
             <main>
 
-                <StateContextProvider>
-                    <Navbar/>
+                {/* <StateContextProvider> */}
+                <Navbar/>
                     {children}
-                </StateContextProvider>
-                
+                {/* </StateContextProvider> */}
+
             </main>
         </body>
     </html>

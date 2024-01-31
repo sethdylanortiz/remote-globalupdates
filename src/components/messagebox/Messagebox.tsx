@@ -15,7 +15,7 @@ const getTheme = (type: string) =>{
     };
 }
 
-const Messagebox = ({type, message, buttons}: {type: string, message: string, buttons: any}) => {
+const Messagebox = ({type, message, buttons}: {type: string, message: any, buttons: any}) => {
     return (
         <div className = {styles.background_opacity}> 
             <div className = {styles.container} 
@@ -24,8 +24,10 @@ const Messagebox = ({type, message, buttons}: {type: string, message: string, bu
                     borderColor: type == "confirmation" ? "" : getTheme(type)[1],
                     borderWidth: type == "confirmation" ? "0px": "3px"
                 }}>
+
                 <p>{message}</p>
                 
+                {/* do we have to iter? */}
                 <div className = {styles.footer_buttons_container}>
                     {buttons.map((button: any, index: any) =>
                          <div key = {index}>
