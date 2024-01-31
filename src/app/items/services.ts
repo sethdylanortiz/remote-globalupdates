@@ -6,8 +6,6 @@ import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-
 import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
 /*
 to-do:
-    - add try catch
-    - add redirect
     - change schema to Filename, Entry
 */
 export type Item = {
@@ -42,12 +40,12 @@ const updateForm = async(curFileName_trim: string, newFileName_trim: string, cur
             await updateEntryDB(newFileName_trim, newJSON_trim, "development");
             // console.log("Updated " + `${newJSON}` + "'s Item successfully!");
             revalidatePath("/items");
-        }catch(error){     
+        }catch(error){
             console.log("error: " + error);
             redirect("/404");
         }
         // delete old entry if new filename was set
-        if(curFileName_trim !== newFileName_trim && curFileName !== "")
+        if(curFileName_trim !== newFileName_trim && curFileName_trim !== "")
         {
             console.log("curFileName_trim !== newFileName_trim");
             try{
@@ -79,6 +77,5 @@ const deleteItem = async(filename: string) => {
         console.log("deleteItem() error: " + error);
         redirect("/404");
     }
-
 };
 export { getDevelopmentItems, updateForm, deleteItem}
