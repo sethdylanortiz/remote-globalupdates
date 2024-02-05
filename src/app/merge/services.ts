@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 // services
-import { getEntryDB, updateEntryDB, deleteEntryDB } from "../lib/dynamodb";
+import { getEntryDB, updateEntryDB, deleteEntryDB, updateConfigVersionsDB, getLiveVersionDB } from "../lib/dynamodb";
 
 export type Item = {
     FileName: string,
@@ -16,17 +16,30 @@ export type SyncedItem = {
     dev_entry: string,
     prod_entry: string
 };
-export type SycnedItems = SyncedItem[];
+export type SyncedItems = SyncedItem[];
 
 const getItemsDatabase = async() => {
     try{
-        const [items_dev_obj, items_prod_obj] = await Promise.all([getEntryDB("development"), getEntryDB("production")]);
-        return {entries_dev_obj: items_dev_obj, entries_prod_obj: items_prod_obj};
+        const [items_dev_obj, unfiltered_items_prod_obj] = await Promise.all([getEntryDB("development"), getEntryDB("production")]);
+        const items_prod_obj = unfiltered_items_prod_obj.Items?.filter((item: any) => item.FileName !== "VERSION" );
+        return {entries_dev_arr: items_dev_obj.Items, entries_prod_arr: items_prod_obj};
     } catch(error){
-        console.log("services.tsx getItemsDatabase() error: " + error);
+        console.log("services.ts getItemsDatabase() error: " + error);
         redirect("/404");
-    }
-}
+    };
+};
+
+const getCurrentLiveVersion = async() => {
+    try{
+        const request = await getLiveVersionDB();
+        // Item?.entry -> add condition
+        return {current_version: Number(request.Item?.entry)};
+    }catch(error){
+        console.log("services.ts getCurrentLiveVersion() error: " + error);
+        redirect("/404");
+    };
+
+};
 
 // compare objects, find differences - to be mapped and displayedmain.ts(31,31): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ filename: string; entry: string; }'.
 // todo - edit function, put logic into for loop to iterate and add changes in order of dev_obj
@@ -36,12 +49,8 @@ const getDifferenceEntries = async(dev_obj_str: string, prod_obj_str: string) =>
         const [prod_obj, dev_obj] = await Promise.all([JSON.parse(prod_obj_str), JSON.parse(dev_obj_str)]);
 
         // SYNC: loop through and find what exists
-        const dev_obj_filenames = dev_obj.map((item: any) => {
-        return item.FileName 
-        });
-        const prod_obj_filenames = prod_obj.map((item: any) => {
-        return item.FileName 
-        });
+        const dev_obj_filenames = dev_obj.map((item: any) => { return item.FileName; });
+        const prod_obj_filenames = prod_obj.map((item: any) => { return item.FileName; });
 
         // SYNCED: items that exist in both => and include differences in entry{} values
         var syncedItemsDiffentEntry = new Array();
@@ -76,10 +85,10 @@ const getDifferenceEntries = async(dev_obj_str: string, prod_obj_str: string) =>
     catch(error){
         console.log("services.tsx getDifferenceEntries() error: " + error);
         redirect("/404");
-    }
-}
+    };
+};
 
-const mergeAll = async({newItems, syncedItemsDiffentEntry, deletedItems}: {newItems: Items, syncedItemsDiffentEntry: SycnedItems, deletedItems: Items}) => {
+const mergeAll = async(newItems: Items, syncedItemsDiffentEntry: SyncedItems, deletedItems: Items, currentVersion: number) => {
     console.log("services.ts, inside mergeAll()! ");
 
     var item_type_index = "newItems";
@@ -88,21 +97,47 @@ const mergeAll = async({newItems, syncedItemsDiffentEntry, deletedItems}: {newIt
             await updateEntryDB(item.FileName, item.entry, "production");
             console.log(`successfully updated ${item.FileName}'s Item!`);
         });
-        revalidatePath("/merge");  // update cached items/entries
+        revalidatePath("/merge");
 
         item_type_index = "syncedItemsDiffentEntry";
         syncedItemsDiffentEntry.map(async(item: SyncedItem) => {
             await updateEntryDB(item.FileName, item.dev_entry, "production");
             console.log(`successfully updated ${item.FileName}'s Item!`);
         });
-        revalidatePath("/merge");  // update cached items/entries
+        revalidatePath("/merge");
 
         item_type_index = "deletedItems";
         deletedItems.map(async(item: Item) => {
             await deleteEntryDB(item.FileName, "production");
             console.log(`successfully updated ${item.FileName}'s Item!`);
         });
-        revalidatePath("/merge");  // update cached items/entries
+        revalidatePath("/merge");
+
+        // update Live versioning DB
+        const items_prod_obj = await getEntryDB("production");
+        const items_prod_arr = items_prod_obj.Items;
+        const newVersion = currentVersion + 1;
+        var version_package = "[";
+
+        // iterate through LIVE db entries and build out return json
+        // todo - fix type ": any"
+        items_prod_arr?.map((item: any) => {
+            if(item.FileName == "VERSION")
+            {
+                item.entry = newVersion.toString();
+            }
+            version_package += JSON.stringify(item) + ",";
+        });
+        version_package = version_package.substring(0, version_package.length - 1) + "]";
+        console.log("version_package: \n" + version_package);
+        console.log(JSON.parse(version_package));
+        
+        await updateConfigVersionsDB(newVersion, version_package);
+        revalidatePath("/versioning");
+
+        // update Live DB version # entry 
+        await updateEntryDB("VERSION", newVersion, "production");
+        revalidatePath("/merge");
 
     }catch(error) {
         console.log("services.ts ERROR handleMerge(), error: " + error);
@@ -110,7 +145,7 @@ const mergeAll = async({newItems, syncedItemsDiffentEntry, deletedItems}: {newIt
         redirect("/404");
     };
 
-    console.log("end of mergeAll()!");
-}
+    console.log("end of mergeAll()");
+};
 
-export { getDifferenceEntries, getItemsDatabase, mergeAll }
+export { getDifferenceEntries, getItemsDatabase, mergeAll, getCurrentLiveVersion};

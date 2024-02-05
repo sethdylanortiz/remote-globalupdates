@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import styles from "./entry.module.css";
 
 // services
-import { updateForm, deleteItem, Item} from "../services";
+import { updateForm, deleteItem, Item } from "../services";
 import { Editor } from "@monaco-editor/react";
 import Button from "../../../components/button/Button";
 import Messagebox from "../../../components/messagebox/Messagebox";

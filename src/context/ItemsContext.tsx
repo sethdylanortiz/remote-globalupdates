@@ -1,8 +1,8 @@
 import React, { createContext, useContext } from "react";
 
 // services
-import { getItemsDatabase } from "../merge/services";
-import { Item } from "../merge/services";
+import { getItemsDatabase } from "../app/merge/services";
+import { Item } from "../app/merge/services";
 
 interface InterfaceItemsContext {
     // newItems: Item[];

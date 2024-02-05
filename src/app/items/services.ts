@@ -18,14 +18,13 @@ export type Items = Item[];
 const getDevelopmentItems = async() => {
     try{
         const items_dev_obj = await getEntryDB("development");
-        return {entries_dev_obj: items_dev_obj}
+        return {entries_dev_arr: items_dev_obj.Items}
     }catch(error){
         console.log("services.ts getDevelopmentItems() error: " + error);
         redirect("/404");
     }
 };
 
-// const updateForm = async(curFileName: string, newFilename: string, curJSON: string, newJSON: string) => {
 const updateForm = async(curFileName_trim: string, newFileName_trim: string, curJSON_trim: string, newJSON_trim: string) => {
 
     console.log("SERVICES.TSX, UPDATEFORM, newFileName_trim: " + newFileName_trim);

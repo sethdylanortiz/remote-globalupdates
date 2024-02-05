@@ -1,8 +1,8 @@
 /*
+aws sdk v3
     FileName (pk): string
     entry: string
 */
-// aws sdk v3
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ScanCommand, DeleteCommand} from '@aws-sdk/lib-dynamodb';
 
@@ -17,20 +17,17 @@ const database_client = new DynamoDBClient({
 const doc_client = DynamoDBDocumentClient.from(database_client);
 
 // method to GET all items [for display] - move to chunks
-// what order does it get it in? will it mix materials + foods?
-const getEntryDB = async(config) => {
+const getEntryDB = (config) => {
     const tablename = config === "production"? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT
     const params = {
         TableName: tablename
         // todo - add batch, by 5x entries at a time
     };
 
-    // todo - add try catch here?
-    // https://levelup.gitconnected.com/building-a-next-js-dynamodb-crud-app-4bb2afe0d2f6
     return doc_client.send(new ScanCommand(params));
 }
 
-const updateEntryDB = async(filename, newJSON, config) => {
+const updateEntryDB = (filename, newJSON, config) => {
 
     const tablename = (config === "production") ? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT;
     const params = {
@@ -45,18 +42,10 @@ const updateEntryDB = async(filename, newJSON, config) => {
         ReturnValues: "ALL_NEW" // returns this string on completion
     };
 
-    // todo - try catch here 
-    // https://levelup.gitconnected.com/building-a-next-js-dynamodb-crud-app-4bb2afe0d2f6
-    // try{
-    //     const response = doc_client.send(new UpdateCommand(params));
-    //     console.log("Success updating: " + filename + ", response: " + response);
-    //     console.log("response: " + response);
-    //     return;
-    // }
     return doc_client.send(new UpdateCommand(params));
 }
 
-const deleteEntryDB = async(filename, config) => {
+const deleteEntryDB = (filename, config) => {
 
     const tablename = (config === "production") ? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT;
     const params = {
@@ -66,8 +55,39 @@ const deleteEntryDB = async(filename, config) => {
         }
     };
 
-    // todo - try catch here
     return doc_client.send(new DeleteCommand(params));
-}
+};
 
-export { getEntryDB, updateEntryDB, deleteEntryDB }
+const getLiveVersionDB = () => {
+    const params = {
+        TableName: process.env.TABLE_NAME_PRODUCTION,
+        Key: {
+            FileName: "VERSION"
+        }
+    };
+
+    return doc_client.send(new GetCommand(params));
+};
+
+// for versioning page
+const getConfigVersionsDB = () => {
+    const params = {
+        TableName: process.env.TABLE_NAME_LIVE_VERSIONING
+    };
+    return doc_client.send(new ScanCommand(params));
+};
+
+const updateConfigVersionsDB = (new_version, new_config) => {
+    const params = {
+        TableName: process.env.TABLE_NAME_LIVE_VERSIONING,
+        Item: {
+            Version: new_version,
+            Item: new_config
+        }
+    };
+
+    return doc_client.send(new PutCommand(params));
+};
+
+export { getEntryDB, updateEntryDB, deleteEntryDB, getConfigVersionsDB,
+     updateConfigVersionsDB, getLiveVersionDB }

@@ -16,7 +16,7 @@ to-do:
 */
 const ItemsPage = async() => {
     // on page load
-    const {entries_dev_obj} = await getDevelopmentItems();
+    const {entries_dev_arr} = await getDevelopmentItems();
     // console.log("ItemsPage.tsx, entries_dev_obj: "); console.log(entries_dev_obj);
 
     return(
@@ -32,7 +32,7 @@ const ItemsPage = async() => {
                 {/* pass all items */}
                 <Suspense fallback = {<p>Loading...</p>}>
                     <Entry
-                        dev_obj_str = {JSON.stringify(entries_dev_obj.Items)}
+                        dev_obj_str = {JSON.stringify(entries_dev_arr)}
                     />
                 </Suspense>
 
