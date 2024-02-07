@@ -21,7 +21,7 @@ todo:
 const VersionPage = async() => {
 
     // get current live version
-    const {current_version} = await getCurrentLiveVersion();
+    const current_version = await getCurrentLiveVersion();
 
     const {versions_obj} = await getVersions();
     const version_arr = JSON.parse(JSON.stringify(versions_obj));

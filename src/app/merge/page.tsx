@@ -9,7 +9,7 @@ import { getDifferenceEntries, getItemsDatabase, getCurrentLiveVersion, Item, Sy
 const MergePage = async() => {
 
     // get current live version
-    const {current_version} = await getCurrentLiveVersion();
+    const current_version = await getCurrentLiveVersion();
     const {entries_dev_arr, entries_prod_arr} = await getItemsDatabase();
     const res_obj = await getDifferenceEntries(JSON.stringify(entries_dev_arr), JSON.stringify(entries_prod_arr));
     const {newItems, syncedItemsDiffentEntry, deletedItems} = JSON.parse(res_obj);
@@ -31,13 +31,13 @@ const MergePage = async() => {
                 :
                 <div className = {styles.cards_container}>
                     {newItems.map((item: Item) => 
-                        <DiffEntry item = {item} item_type = "new" key = {item.FileName}/>
+                        <DiffEntry item = {item} item_type = "new" key = {item.Filename}/>
                     )}
                     {syncedItemsDiffentEntry.map((item: SyncedItem) => 
-                        <DiffEntry item = {item} item_type = "synced" key = {item.FileName}/>
+                        <DiffEntry item = {item} item_type = "synced" key = {item.Filename}/>
                     )}
                     {deletedItems.map((item: Item) => 
-                        <DiffEntry item = {item} item_type = "deleted" key = {item.FileName}/>
+                        <DiffEntry item = {item} item_type = "deleted" key = {item.Filename}/>
                     )}
                     
                     <div className = {styles.merge_button_container}>

@@ -12,7 +12,7 @@ interface InterfaceItemsContext {
     // updateItem();
     // deleteItem();
     items: Item[];
-    addItem: (FileName: string) => void;
+    addItem: (Filename: string) => void;
 }
 
 // export const ItemsContext = createContext<Item | undefined>(undefined);
@@ -33,7 +33,7 @@ export const useItemsContext = () => {
 
 export const ItemsContextProvider = ({children}: {children:React.ReactNode}) => {
     // get newItems, syncedItems, deletedItems
-    const items: Item[] =  [{FileName: "hi", entry: "bye"}];
+    const items: Item[] =  [{Filename: "hi", Entry: "bye"}];
     const addItem = (filename: string) => {
         // call services.ts' addItem()
         console.log("ItemsContext.tsx - addItem()");

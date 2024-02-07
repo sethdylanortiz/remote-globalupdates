@@ -11,12 +11,12 @@ import EntryCard from "@/components/entrycard/EntryCard";
 const DiffEntry = ({item, item_type}: {item: Item | SyncedItem, item_type: string}):JSX.Element =>{
 
     // for entry editor
-    const [fileName, setFileName] = useState<any>(null);
+    const [filename, setFilename] = useState<any>(null);
     const [showEditor, setShowEditor] = useState(false);
     const [originalJSON, setOriginalJSON] = useState<string | null>(null);
     const [modifiedJSON, setModifiedJSON] = useState<string | null>(null);
     const handleCompare = (filename: string, original: string | null, modified: string | null) => {
-        setFileName(filename);
+        setFilename(filename);
         setOriginalJSON(original);
         setModifiedJSON(modified);
         setShowEditor(true);
@@ -25,14 +25,14 @@ const DiffEntry = ({item, item_type}: {item: Item | SyncedItem, item_type: strin
     try{
         return (
         <div className = {styles.container}>
-            <EntryCard filename = {item.FileName} type = {item_type} buttons = {
+            <EntryCard filename = {item.Filename} type = {item_type} buttons = {
                 <Button text = "Compare" color = "blue" handleClick = {() => {
                         if(item_type == "new")
-                            handleCompare(item.FileName, null, item.entry);
+                            handleCompare(item.Filename, null, item.Entry);
                         else if(item_type == "synced")
-                            handleCompare(item.FileName, item.dev_entry, item.prod_entry);
+                            handleCompare(item.Filename, item.dev_entry, item.prod_entry);
                         else 
-                            handleCompare(item.FileName, item.entry, null);
+                            handleCompare(item.Filename, item.Entry, null);
                     }
                 }/>
             }/>
@@ -46,7 +46,7 @@ const DiffEntry = ({item, item_type}: {item: Item | SyncedItem, item_type: strin
                     </div>
 
                     <div className = {styles.filename_textarea}>
-                        <p>{fileName}</p>     
+                        <p>{filename}</p>     
                     </div>
 
                     <div className = {styles.editor_text}>

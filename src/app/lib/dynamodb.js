@@ -1,7 +1,7 @@
 /*
 aws sdk v3
-    FileName (pk): string
-    entry: string
+    Filename (pk): string
+    Entry: string
 */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ScanCommand, DeleteCommand} from '@aws-sdk/lib-dynamodb';
@@ -16,12 +16,13 @@ const database_client = new DynamoDBClient({
 
 const doc_client = DynamoDBDocumentClient.from(database_client);
 
-// method to GET all items [for display] - move to chunks
-const getEntryDB = (config) => {
+// method to GET all items
+const getItemsDB = (config) => {
     const tablename = config === "production"? process.env.TABLE_NAME_PRODUCTION : process.env.TABLE_NAME_DEVELOPMENT
+    
+    // todo - add batch, by 5x entries at a time
     const params = {
         TableName: tablename
-        // todo - add batch, by 5x entries at a time
     };
 
     return doc_client.send(new ScanCommand(params));
@@ -33,9 +34,9 @@ const updateEntryDB = (filename, newJSON, config) => {
     const params = {
         TableName: tablename,
         Key: {
-            FileName: filename
+            Filename: filename
         },
-        UpdateExpression: "SET entry = :p",
+        UpdateExpression: "SET Entry = :p",
         ExpressionAttributeValues: {
             ":p": newJSON
         },
@@ -51,7 +52,7 @@ const deleteEntryDB = (filename, config) => {
     const params = {
         TableName: tablename,
         Key: {
-            FileName: filename
+            Filename: filename
         }
     };
 
@@ -62,7 +63,7 @@ const getLiveVersionDB = () => {
     const params = {
         TableName: process.env.TABLE_NAME_PRODUCTION,
         Key: {
-            FileName: "VERSION"
+            Filename: "VERSION"
         }
     };
 
@@ -89,5 +90,18 @@ const updateConfigVersionsDB = (new_version, new_config) => {
     return doc_client.send(new PutCommand(params));
 };
 
-export { getEntryDB, updateEntryDB, deleteEntryDB, getConfigVersionsDB,
-     updateConfigVersionsDB, getLiveVersionDB }
+// for development db
+// todo: check cache for any HIT on call
+const getItemDB = (filename) => {
+    const params = {
+        TableName: process.env.TABLE_NAME_DEVELOPMENT,
+        Key: {
+            Filename: filename
+        }
+    };
+
+    return doc_client.send(new GetCommand(params));
+};
+
+export { getItemsDB, updateEntryDB, deleteEntryDB, getConfigVersionsDB,
+     updateConfigVersionsDB, getLiveVersionDB, getItemDB }

@@ -1,23 +1,21 @@
 import React from "react";
 import styles from "./itemspage.module.css";
-import Entry from "@/app/items/entry/Entry"; 
 import { Suspense } from 'react'
 
 // services
-import { getDevelopmentItems } from "./services";
-
+import { getDevelopmentFilenames } from "./services";
+import Entry from "@/app/items/entry/Entry"; 
+import AddItem from "./addItem/AddItem";
 /* 
 to-do:
     - fetch aws by chunks of 5 entries, getting filenames and their strings/values
     - cache?
     - add useReducer
-    - CHANGE - to map over aws call and create an invidual entry -> don't send entire string to <entry>
-    - add <suspense>
+    - update <suspense>
 */
 const ItemsPage = async() => {
-    // on page load
-    const {entries_dev_arr} = await getDevelopmentItems();
-    // console.log("ItemsPage.tsx, entries_dev_obj: "); console.log(entries_dev_obj);
+
+    const dev_filenames = await getDevelopmentFilenames();
 
     return(
         // to-do: move styles.container into globals.css
@@ -27,16 +25,24 @@ const ItemsPage = async() => {
                 <p>Development configuration - all items</p>
             </div>
 
-            <div className = {styles.items_container}>
-
-                {/* pass all items */}
-                <Suspense fallback = {<p>Loading...</p>}>
-                    <Entry
-                        dev_obj_str = {JSON.stringify(entries_dev_arr)}
-                    />
-                </Suspense>
-
+            <div className = {styles.add_Item_container}>
+                <AddItem/>
             </div>
+
+            <div className = {styles.items_container}>
+                <Suspense fallback = {<p>Loading...</p>}>
+                    {dev_filenames?.map((item: any) => 
+                        <Entry item = {item} key = {item.Filename} />
+                    )}
+                </Suspense>
+            </div>
+
+            {dev_filenames == null && 
+                <div className = {styles.no_items_db}> 
+                    <p>Looks like the development database is empty...</p>
+                    <p>Add a new item to begin a new entry</p>
+                </div>
+            }
 
         </div>
     )
