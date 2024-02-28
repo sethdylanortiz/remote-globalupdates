@@ -22,21 +22,17 @@ const Navbar = () => {
         <nav className = {styles.container}>
             <Link className = {styles.logo_link} href = "/">
                     <Image
+                        className = {styles.image}
                         src = {logo_badpirate}
                         alt = "logo_badpirate"
-                        height = {0}
-                        width = {0}
-                        style = {{
-                            // maxHeight: "5%",
-                            // height: "auto",
-                            maxWidth: "9%",
-                            height: "auto",
-                        }}
+                        height = {50}
+                        width = {50}
                     />
+
                     <div className = {styles.header_name}>
                         <h2>Bad Pirate</h2>
                 </div>
-           </Link>
+            </Link>
 
             <div className = {styles.nav_links}>
                 {links.map((link: any) => 

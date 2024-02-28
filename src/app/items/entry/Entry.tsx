@@ -10,28 +10,24 @@ import EntryCard from "@/components/entrycard/EntryCard";
 import JSONEditor from "../jsonEditor/JSONEditor";
 
 // todo - find a better way to handle so many useState(), add useReducer?
-// check for memory leak on deleteItem()
+// todo - parge incoming item.Filename -> for folder display
 const Entry = ({item}: {item: Item}):JSX.Element => {
 
-    // for editor state
+    // for handling form errors
+    const [deleteSuccess, showDeleteSuccess] = useState(false);
+    const [deleteConfirmation, showDeleteConfirmation] = useState(false);
+
+    // for editor
+    const [filename, setFilename] = useState<null | string>(null);
+    const [json, setJSON] = useState<null | string>(null);
     const [showEditor, setShowEditor] = useState(false);
     const toggleShowEditor = () => {
         setShowEditor(false);
-    }
-
-    // for handling form errors
-    const [successBox, showSuccessBox] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-    // for textarea filename
-    const [filename, setFilename] = useState<null | string>(null);
-
-    // for json <Editor/> component
-    const [json, setJSON] = useState<null | string>(null);
+        setFilename(null);
+        setJSON(null);
+    };
     
     try {
-        console.log("filename: " + filename);
-        console.log("json: " + json);
         return(
             <div className = {styles.container}>
 
@@ -44,7 +40,7 @@ const Entry = ({item}: {item: Item}):JSX.Element => {
                     }}/>,
                     <Button key = "Delete" text = "Delete" color = "red" handleClick = {() => {
                         setFilename(item.Filename);
-                        setShowDeleteConfirm(true);
+                        showDeleteConfirmation(true);
                     }}/>
                     ]}
                 />
@@ -53,7 +49,7 @@ const Entry = ({item}: {item: Item}):JSX.Element => {
                     <JSONEditor filename = {filename} json = {json} hideEditor = {toggleShowEditor}/>
                 }
                 
-                {showDeleteConfirm == true && (
+                {deleteConfirmation == true && (
                     <div>
                         <Messagebox type = "confirmation" message = "Are you sure you want to delete this Item from Development?" 
                             buttons = {[
@@ -61,31 +57,31 @@ const Entry = ({item}: {item: Item}):JSX.Element => {
                                     deleteItem(filename);
                                     setFilename(null);
                                     setJSON(null);
-                                    showSuccessBox(true);
+                                    showDeleteSuccess(true);
                                 }}/>,
                                 <Button text = "Close" color = "grey" handleClick = {() => {
                                     setFilename(null);
                                     setJSON(null);
-                                    setShowDeleteConfirm(false);
+                                    showDeleteConfirmation(false);
                                 }}/>
                             ]}
                         />
-                        {successBox == true && (
+                        {deleteSuccess == true && (
                             <Messagebox type = "success" message = {`Success deleting "${filename}" from Development database`} 
                                 buttons = {[
                                     <Button text = "Dismiss" color = "grey" handleClick = {() => {
                                         setFilename(null);
                                         setJSON(null);
-                                        showSuccessBox(false);
-                                        setShowDeleteConfirm(false);
+                                        showDeleteSuccess(false);
+                                        showDeleteConfirmation(false);
                                     }}/>
                                 ]}
                             />
                         )}
                     </div>
                 )}
+
             </div>
-        
         );
     } catch(error) {
         console.log("filename:              " + filename);

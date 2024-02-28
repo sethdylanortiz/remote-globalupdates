@@ -30,6 +30,7 @@ const ItemsPage = async() => {
             </div>
 
             <div className = {styles.items_container}>
+                {/* update suspense */}
                 <Suspense fallback = {<p>Loading...</p>}>
                     {dev_filenames?.map((item: any) => 
                         <Entry item = {item} key = {item.Filename} />

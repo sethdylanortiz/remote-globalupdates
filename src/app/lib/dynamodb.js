@@ -90,7 +90,6 @@ const updateConfigVersionsDB = (new_version, new_config) => {
     return doc_client.send(new PutCommand(params));
 };
 
-// for development db
 // todo: check cache for any HIT on call
 const getItemDB = (filename) => {
     const params = {
@@ -103,5 +102,26 @@ const getItemDB = (filename) => {
     return doc_client.send(new GetCommand(params));
 };
 
+const getFileNamesDB = () => {
+    const params = {
+        TableName: process.env.TABLE_NAME_DEVELOPMENT,
+        ProjectionExpression: "Filename"
+    };
+
+    return doc_client.send(new ScanCommand(params));
+};
+
+const getJSONDataDB = (version) => {
+    const params = {
+        TableName: process.env.TABLE_NAME_LIVE_VERSIONING,
+        Key: {
+            Version: 0
+        }
+    };
+
+    return doc_client.send(new GetCommand(params));
+}
+
 export { getItemsDB, updateEntryDB, deleteEntryDB, getConfigVersionsDB,
-     updateConfigVersionsDB, getLiveVersionDB, getItemDB }
+     updateConfigVersionsDB, getLiveVersionDB, getItemDB, getFileNamesDB,
+     getJSONDataDB }

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"; // https://nextjs.org/docs/app/build
 import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
 
 // services
-import { getItemsDB, updateEntryDB, deleteEntryDB, getItemDB } from "../lib/dynamodb";
+import { getItemsDB, updateEntryDB, deleteEntryDB, getItemDB, getFileNamesDB } from "../lib/dynamodb";
 
 export type Item = {
     Filename: string,
@@ -22,14 +22,14 @@ const getDevelopmentItems = async() => {
     }
 };
 
-export const getDevelopmentFilenames = async() => {
+const getDevelopmentFilenames = async() => {
     try{
-        const request = await getItemsDB("development");
-        return request.Items ? request.Items : null;        
+        const request = await getFileNamesDB();
+        return request.Items ? request.Items : null;
     }catch(error){
         console.log("getDevelopmentFilenames() error: " + error);
         redirect("/404");
-    }
+    };
 };
 
 const updateForm = async(curFilename_trim: string, newFilename_trim: string, curJSON_trim: string, newJSON_trim: string) => {
@@ -101,4 +101,12 @@ const getEntry = async(filename: string) => {
     }
 };
 
-export { getDevelopmentItems, updateForm, deleteItem, doesItemExist, getEntry }
+// display: block - take up whole width of screen and move things above/below - a <div> is diplsay block
+// function to display/seperate entries db array into folders
+const parseFilenames = async(items: Item[]) => {
+    
+        
+    
+};
+
+export { getDevelopmentItems, updateForm, deleteItem, doesItemExist, getEntry, getDevelopmentFilenames };
