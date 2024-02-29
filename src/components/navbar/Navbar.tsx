@@ -9,6 +9,10 @@ import Link from "next/link";
 import styles from "./navbar.module.css";
 import logo_badpirate from "../../../public/icon-pirate_ship.png";
 
+/*
+todo:
+    - add hamburger drop down menu on width decrease
+*/
 const Navbar = () => {
 
     const links = [

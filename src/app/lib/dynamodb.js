@@ -3,7 +3,7 @@ aws sdk v3
     Filename (pk): string
     Entry: string
 */
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, ReturnValue } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ScanCommand, DeleteCommand} from '@aws-sdk/lib-dynamodb';
 
 const database_client = new DynamoDBClient({
@@ -90,7 +90,7 @@ const updateConfigVersionsDB = (new_version, new_config) => {
     return doc_client.send(new PutCommand(params));
 };
 
-// todo: check cache for any HIT on call
+// todo: check cache for any HIT on call cache
 const getItemDB = (filename) => {
     const params = {
         TableName: process.env.TABLE_NAME_DEVELOPMENT,
@@ -115,13 +115,29 @@ const getJSONDataDB = (version) => {
     const params = {
         TableName: process.env.TABLE_NAME_LIVE_VERSIONING,
         Key: {
-            Version: 0
+            Version: version
         }
     };
 
     return doc_client.send(new GetCommand(params));
+};
+
+const writeJSONDataDB = (version, updatedItem) => {
+    const params = {
+        TableName: process.env.TABLE_NAME_LIVE_VERSIONING,
+        Key: {
+            Version: version
+        },
+        UpdateExpression: "SET Entry = :p",
+        ExpressionAttributeValues: {
+            ":p": updatedItem
+        },
+        ReturnValues: "ALL_NEW"
+    };
+
+    return doc_client.send(new UpdateCommand(params));
 }
 
 export { getItemsDB, updateEntryDB, deleteEntryDB, getConfigVersionsDB,
      updateConfigVersionsDB, getLiveVersionDB, getItemDB, getFileNamesDB,
-     getJSONDataDB }
+     getJSONDataDB, writeJSONDataDB }
