@@ -13,7 +13,6 @@
     padding-top: 4px;
     padding-bottom: 4px;
 
-    width: 100%;
     cursor: pointer;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.6);
 }
@@ -26,22 +25,21 @@
     flex-direction: row;
     gap: 20px
 }
-.button{
-    background-color: pink;
-}
 
 .file{
     background-color: white;
     height: 60px;
+    text-align: left;
     align-items: center;
     display: flex;
 
     margin-top: 15px;
 
-    padding-left: 25px;
-    padding-right: 25px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    justify-content: space-between;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 4px;
+    padding-bottom: 4px;
 
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.6);
 }

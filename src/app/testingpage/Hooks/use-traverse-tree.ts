@@ -1,7 +1,3 @@
-/*
-todo: 
-    - check if folder/filename already exists in **current directory
-*/
 const useTraverseTree = () => {
 
     // parent: desired subnode to be updated (or parent)
@@ -19,7 +15,7 @@ const useTraverseTree = () => {
                     __items: []
                 });
             }
-            // else, add logic for new file (__value) instead of (__items)
+            // else, add logic for new file, add passing of json editor value
 
             return tree;
         }
@@ -31,8 +27,28 @@ const useTraverseTree = () => {
 
         return { ...tree, __items: currentNode };
     }
+    
+    const deleteNode = (tree: any, id: number) => {
 
-    return { insertNode }
+        // check if current parent contains desired deletion id
+        const found_idx = tree.__items.findIndex((item: any) => item.__id == id);
+        if(found_idx != -1)
+        {
+            // remove node from parent's __items[]
+            tree.__items.splice(found_idx, 1);
+
+            return tree;
+        }
+
+        // depth first search - look through entire tree to find
+        let currentNode = tree.__items.filter((item: any) => {
+            return deleteNode(item, id);
+        });
+
+        return { ...tree, __items: currentNode };
+    }
+
+    return { insertNode, deleteNode }
 };
 
 export default useTraverseTree;

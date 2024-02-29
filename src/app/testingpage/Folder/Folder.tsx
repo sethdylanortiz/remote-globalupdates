@@ -4,57 +4,91 @@ import styles from "./folder.module.css";
 
 // services
 import Button from '@/components/button/Button';
-import { updateDevelopmentJSONData } from '../services';
+import { updateDevelopmentJSON, deleteDevelopmentJSON } from '../services';
 
 /*
 todo:
-- new file
-- new folder
+    - new file
 
-- edit file
-- delete file
+    - edit file
+    - delete file
+
+    - edit folder name
+    - delete folder
+
+completed: 
+    - new folder
+
 */
-
 const Folder = ({json} : {json: any}) => {
 
     const [expand, setExpand] = useState(false);
-    const [isNewFolder, setIsNewFolder] = useState(false);
+    const [showInput, setShowInput] = useState(false);
+    const [newFolder, setNewFolder] = useState(false);
     const [inputText, setInputText] = useState("");
 
     const handleNewItem = (e: any, isFolder: boolean) => {
+        // to prevent click-though "+ Folder / + File" buttons
         e.stopPropagation();
-        setExpand(true);
 
-        if(isFolder == true)
-        {
-            setIsNewFolder(true);
-        }
+        isFolder ? setNewFolder(true) : setNewFolder(false);
+        setExpand(true);
+        setShowInput(true);
     }
-    const addFolder = (e: any) => {
+    // todo: add min characater count checking
+    const addItem = (e: any) => {
+        // to prevent click-though "+ Folder / + File" buttons
+        e.stopPropagation();
         // to prevent refresh after form submission
         e.preventDefault();
 
-        // todo: add min characater count checking
-        updateDevelopmentJSONData({parent: json.name, newItemName: inputText, isFolder: true});
+        // check request is new folder or file
+        if(newFolder == true)
+        {
+            updateDevelopmentJSON({parent: json.name, newItemName: inputText, isFolder: true});
+        }else
+        {
+            ;
+        }
+        
+        // hide "+ Folder" the drop down menu
+        setShowInput(false);
+    }
+    const deleteItem = (e: any) => {
+        // to prevent click-though "+ Folder / + File" buttons
+        e.stopPropagation();
+        // to prevent refresh after form submission
+        e.preventDefault();
 
-        console.log("end of addFolder()");
+        console.log("json.name: " + json.name);
+
+        // remove item
+        deleteDevelopmentJSON({id: json.__id});
     }
 
     if(json.__isFolder == false)
     {
         return (
-            <span className = {styles.file}> 📄 {json.name} </span>
+            <div className = {styles.file}>
+                <span>📄 {json.name} </span>
+
+                <div className = {styles.button_container}>
+                    <Button text = "Delete" color = "orange" handleClick = {(e: any) => deleteItem(e)}/>
+                    <Button text = "Edit" color = "blue"/>
+                </div>
+            </div>
         )
     }
     // else
     return (
-        <div>
+        <div className = {styles.container}>
 
             <div className = {styles.folder} onClick = {() => setExpand(!expand)}>
                 <span>📁 {json.name}</span>
 
                 <div className = {styles.button_container}>
-                    {/* <button className = {styles.button} onClick = {(e) => handleNewItem(e, true)}>+ Folder</button> */}
+                    <Button text = "Delete" color = "orange" handleClick = {(e: any) => deleteItem(e)}/>
+                    
                     <Button text = "+ Folder" color = "grey" handleClick = {(e: any) => handleNewItem(e, true)}/>
                     <Button text = "+ File" color = "grey" handleClick = {(e: any) => handleNewItem(e, false)}/>
                 </div>
@@ -62,31 +96,27 @@ const Folder = ({json} : {json: any}) => {
 
             <div style = {{display: expand ? "block" : "none", paddingLeft: 50}}>
 
-                {isNewFolder && (
+                {showInput && (
                     <div className = {styles.new_folder}>
 
-                        <form className = {styles.folder_input} onSubmit = {addFolder}>
-                        {/* <div className = {styles.folder_input}> */}
-                            <span>📁</span>
+                        <form className = {styles.folder_input} onSubmit = {addItem}>
+                            {newFolder ? <span>📁</span>:  <span>📄</span>}
                             <input 
                                 type = "text"
                                 value = {inputText}
                                 onChange = {(e) => setInputText(e.target.value)}
                                 autoFocus
                             />
-                            {/* <Button text = "Save" color = "blue" buttonType = "submit"/> */}
-                            <Button text = "Save" color = "blue" handleClick = {(e: any) => addFolder(e)}/>
-                            <Button text = "Cancel" color = "grey" handleClick = {() => setIsNewFolder(false)}/>
+                            <Button text = "Save" color = "blue" handleClick = {(e: any) => addItem(e)}/>
+                            <Button text = "Cancel" color = "grey" handleClick = {() => setShowInput(false)}/>
                         </form>
                         
                     </div>
-                    )}
-
-
+                )}
 
                 {
                     json.__items.map((item: any) => {
-                        return <Folder json = {item}/>
+                        return <Folder json = {item} key = {json.__id}/>
                     })
                 }
             </div>

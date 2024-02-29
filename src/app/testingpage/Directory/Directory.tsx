@@ -19,7 +19,7 @@ const Directory = ({json}: {json: any}) => {
 
     }
 
-    if(json.__value)
+    if(json.__isFolder == false)
     {
         return (
             <div className = {styles.item}>

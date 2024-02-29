@@ -18,7 +18,7 @@ const getDevelopmentJSONData = async() => {
     };
 };
 
-const updateDevelopmentJSONData = async({parent, newItemName, isFolder}:
+const updateDevelopmentJSON = async({parent, newItemName, isFolder}:
     {parent: string, newItemName: string, isFolder: boolean}) => {
 
     try{
@@ -36,76 +36,114 @@ const updateDevelopmentJSONData = async({parent, newItemName, isFolder}:
 
         revalidatePath("/testingpage");
     }catch(error){
+        console.log("services.ts updateDevelopmentJSON() error: " + error);
+        redirect("/404");
+    }
+};
+
+const deleteDevelopmentJSON = async({id}: {id: number}) => {
+
+    try{
+        // get current entire json (next.js cache)
+        const getDBrequest = await getJSONDataDB(0);
+        const json_dev = JSON.parse(getDBrequest.Item?.Entry); // returns type string
+
+        // add passed sub-json to current json
+        const { deleteNode } = useTraverseTree();
+        const updatedTree = deleteNode(json_dev, id);
+
+        // write to new db
+        console.log("updatedTree: "); console.log(JSON.stringify(updatedTree, null, 4));
+        // await writeJSONDataDB(0, JSON.stringify(updatedTree));
+
+        revalidatePath("/testingpage");
+    }catch(error){
         console.log("services.ts updateDevelopmentJSONData() error: " + error);
         redirect("/404");
     }
 };
 
-export { getDevelopmentJSONData, updateDevelopmentJSONData };
+export { getDevelopmentJSONData, updateDevelopmentJSON, deleteDevelopmentJSON };
 
-// {
-//     "name": "rootdir",
-//     "__isFolder": true,
-//     "__items": [
-//         {
-//             "name": "food items",
-//             "__isFolder": true,
-//             "__items": [
-//             {
-//                 "name": "prices",
-//                 "__isFolder": true,
-//                 "__items":[
-//                 {
-//                     "name": "apple",
-//                     "__isFolder": false,
-//                     "__items": [],
-//                     "__value": 
-//                     {
-//                         "person": "John",
-//                         "age": 30,
-//                         "car": 100
-//                     }
-//                 }]
-//             }]
-//         },
-//         {
-//             "name": "stats",
-//             "__isFolder": true,
-//             "__items": [
-//                 {
-//                     "name": "apple",
-//                     "__isFolder": false,
-//                     "__items": [],
-//                     "__value": 
-//                     {
-//                         "person": "John",
-//                         "age": 30,
-//                         "car": 100
-//                     }
-//                 },
-//                 {
-//                     "name": "steak",
-//                     "__isFolder": false,
-//                     "__items": [],
-//                     "__value": 
-//                     {
-//                         "person": "John",
-//                         "age": 30,
-//                         "car": 100
-//                     }
-//                 }
-//             ]
-//         },
-//     {
-//         "name": "changelog",
-//         "__isFolder": false,
-//         "__items": [],
-//         "__value":
-//         {
-//             "person": "John",
-//             "age": 30,
-//             "car": 100
-//         }
-//     }
-//     ]
-// }
+/*
+todo: remove "values": since we now have "__isFolder"?
+
+{
+    "name": "rootdir",
+    "__id": 100,
+    "__isFolder": true,
+    "__items": [
+        {
+            "name": "food items",
+            "__id": 1,
+            "__isFolder": true,
+            "__items": [
+                {
+                    "name": "prices",
+                    "__id": 2,
+                    "__isFolder": true,
+                    "__items": [
+                        {
+                            "name": "apple",
+                            "__id": 3,
+                            "__isFolder": false,
+                            "__items": [],
+                            "__value": {
+                                "person": "John",
+                                "age": 30,
+                                "car": 100
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "stats",
+            "__id": 65,
+            "__isFolder": true,
+            "__items": [
+                {
+                    "name": "new folder testing",
+                    "__id": 5,
+                    "__isFolder": true,
+                    "__items": []
+                },
+                {
+                    "name": "apple",
+                    "__id": 6,
+                    "__isFolder": false,
+                    "__items": [],
+                    "__value": {
+                        "person": "John",
+                        "age": 30,
+                        "car": 100
+                    }
+                },
+                {
+                    "name": "steak",
+                    "__id": 7,
+                    "__isFolder": false,
+                    "__items": [],
+                    "__value": {
+                        "person": "John",
+                        "age": 30,
+                        "car": 100
+                    }
+                }
+            ]
+        },
+        {
+            "name": "changelog",
+            "__id": 8,
+            "__isFolder": false,
+            "__items": [],
+            "__value": {
+                "person": "John",
+                "age": 30,
+                "car": 100
+            }
+        }
+    ]
+}
+*/
