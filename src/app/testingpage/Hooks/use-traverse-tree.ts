@@ -48,7 +48,26 @@ const useTraverseTree = () => {
         return { ...tree, __items: currentNode };
     }
 
-    return { insertNode, deleteNode }
+    const renameNode = (tree: any, id: number, newname: string) => {
+
+        // check if we're at desired sub-tree, confirm if subree is folder
+        if((tree.__id == id) && (tree.__isFolder == true)) 
+        {
+            // edit tree's specific name
+            tree.name = newname;
+
+            return tree;
+        }
+
+        // depth first search - look through entire tree to find
+        let currentNode = tree.__items.map((item: any) => {
+            return renameNode(item, id, newname);
+        });
+
+        return { ...tree, __items: currentNode };
+    }
+
+    return { insertNode, deleteNode, renameNode }
 };
 
 export default useTraverseTree;

@@ -69,3 +69,14 @@
     border-width: 1.5px;
     border-color: black;
 }
+
+.input{
+    border-width: 2px;
+    border-color: black;
+}
+.folder_rename{
+    display: flex;
+    align-items: center;
+
+    gap: 15px
+}

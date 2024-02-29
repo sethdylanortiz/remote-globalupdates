@@ -54,7 +54,7 @@ const deleteDevelopmentJSON = async({id}: {id: number}) => {
 
         // write to new db
         console.log("updatedTree: "); console.log(JSON.stringify(updatedTree, null, 4));
-        // await writeJSONDataDB(0, JSON.stringify(updatedTree));
+        await writeJSONDataDB(0, JSON.stringify(updatedTree));
 
         revalidatePath("/testingpage");
     }catch(error){
@@ -63,10 +63,35 @@ const deleteDevelopmentJSON = async({id}: {id: number}) => {
     }
 };
 
-export { getDevelopmentJSONData, updateDevelopmentJSON, deleteDevelopmentJSON };
+const renameDevelopmentJSON = async({id, newname}: {id: number, newname: string}) => {
+
+    console.log("renameDevelopmentJSON, newname: " + newname);
+
+    try{
+        // get current entire json (next.js cache)
+        const getDBrequest = await getJSONDataDB(0);
+        const json_dev = JSON.parse(getDBrequest.Item?.Entry); // returns type string
+
+        // add passed sub-json to current json
+        const { renameNode } = useTraverseTree();
+        const updatedTree = renameNode(json_dev, id, newname);
+
+        // write to new db
+        console.log("updatedTree: "); console.log(JSON.stringify(updatedTree, null, 4));
+        // await writeJSONDataDB(0, JSON.stringify(updatedTree));
+
+        revalidatePath("/testingpage");
+    }catch(error){
+        console.log("services.ts updateDevelopmentJSONData() error: " + error);
+        redirect("/404");
+    }
+}
+
+export { getDevelopmentJSONData, updateDevelopmentJSON, deleteDevelopmentJSON, renameDevelopmentJSON };
 
 /*
-todo: remove "values": since we now have "__isFolder"?
+todo: 
+    - remove "values": since we now have "__isFolder"?
 
 {
     "name": "rootdir",
