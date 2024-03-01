@@ -4,32 +4,39 @@ import styles from "./folder.module.css";
 
 // services
 import Button from '@/components/button/Button';
-import { updateDevelopmentJSON, deleteDevelopmentJSON, renameDevelopmentJSON } from '../services';
+import { addDevelopmentJSON, deleteDevelopmentJSON, editDevelopmentJSON } from '../services';
+import JSONEditor from '@/app/testingpage/JSONEditor/JSONEditor';
 
 /*
 todo:
-    -  add min characater count checking for form inputs
-
-    - new file
-
-    - edit file
+    - clean up <JSONEditor/>
 
 completed: 
-    - delete file
+    - new file
+    - edit file
 
+    - delete file 
 
     - new folder
     - edit folder name
     - delete folder
 
+    - fix .map multiple __id occurance problem frontend [next.js problem]
+    - add min characater count checking for form inputs
 */
+export type ActionTypes = "File new" | "File edit" | "";
+
 const Folder = ({json} : {json: any}) => {
 
+    // todo: make showinput(s) usestates into .types - except for expand
+    // const [isNewFile, setIsNewFile] = useState(false);
+    const [fileAction, setFileAction] = useState<ActionTypes>("");
+
+    const [inputText, setInputText] = useState("");
     const [expand, setExpand] = useState(false);
     const [showInput, setShowInput] = useState(false);
-    const [newFolder, setNewFolder] = useState(false);
-    const [inputText, setInputText] = useState("");
     const [showRenameFolder, setShowRenameFolder] = useState(false);
+    // const [showJSONEditor, setJSONShowEditor] = useState(false);
 
     const cancelInput = (e: any) => {
         // to prevent click-though "+ Folder / + File" buttons
@@ -39,30 +46,29 @@ const Folder = ({json} : {json: any}) => {
 
         setInputText("");
     }
-    const handleNewItem = (e: any, isFolder: boolean) => {
+    const handleNewFolder = (e: any) => {
         e.stopPropagation();
 
-        isFolder ? setNewFolder(true) : setNewFolder(false);
         setExpand(true);
         setShowInput(true);
     }
-
-    const addItem = (e: any) => {
-        e.stopPropagation();
-        e.preventDefault();
+    const addFolder = () => {
 
         // check request is new folder or file
-        if(newFolder == true)
-        {
-            updateDevelopmentJSON({parent: json.name, newItemName: inputText, isFolder: true});
-        }else
-        {
-            ;
-        }
+        addDevelopmentJSON({parent: json.name, newItemName: inputText, newItemValue: "", isFolder: true});
         
         setShowInput(false);
         setInputText("");
     }
+    const handleNewFile = (e: any) => {
+        console.log("handleNewFile(), fileAction: " + fileAction);
+        e.stopPropagation();
+        // e.preventDefault();
+
+        // setJSONShowEditor(true);
+        setFileAction("File new");
+    }
+
     const deleteItem = (e: any) => {
         e.stopPropagation();
         e.preventDefault();
@@ -70,26 +76,20 @@ const Folder = ({json} : {json: any}) => {
         // remove item
         deleteDevelopmentJSON({id: json.__id});
     }
-
     const handleRenameItem = (e: any) => {
         e.stopPropagation();
         e.preventDefault();
 
         setShowRenameFolder(true);
     }
-    const renameFolder = (e: any) => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        // todo: make sure inputText.length > x
-
+    const renameFolder = () => {
         // rename item
-        renameDevelopmentJSON({id: json.__id, newname: inputText});
+        editDevelopmentJSON({id: json.__id, newItemName: inputText});
 
         setShowRenameFolder(false);
         setInputText("");
     }
-    
+
 
     if(json.__isFolder == false)
     {
@@ -98,43 +98,84 @@ const Folder = ({json} : {json: any}) => {
                 <span>📄 {json.name} </span>
 
                 <div className = {styles.button_container}>
-                    <Button text = "Edit" color = "blue"/>
+                    <Button text = "Edit" color = "blue" handleClick = {(e: any) => {
+                        e.stopPropagation();
+
+                        // setJSONShowEditor(true);
+                        // setIsNewFile(false);
+                        
+                        setFileAction("File edit");
+                    }}/>
                     <Button text = "Delete" color = "orange" handleClick = {(e: any) => deleteItem(e)}/>
                 </div>
+
+                {fileAction == "File edit" && (
+                    <JSONEditor 
+                        filename = {json.name} 
+                        json = {JSON.stringify(json.__value)}
+                        id = {json.__id}
+                        
+                        hideEditor = {() => {
+                            setFileAction("");
+                        }}
+                        action = "File edit"
+                    />
+                )}
             </div>
         )
+        
     }
+
     // else
     return (
         <div className = {styles.container}>
 
             <div className = {styles.folder} onClick = {() => setExpand(!expand)}>
-                {showRenameFolder == false ? <span>📁 {json.name}</span> : 
-                <form className = {styles.folder_rename}>
-                    <span>📁</span>
-                    <input
-                        className = {styles.input}
-                        required = {true}
-                        autoFocus
-                        type = "text"
-                        placeholder = "New folder name"
-                        onChange = {(e) => setInputText(e.target.value)}
-                        minLength = {4}
-                    /> 
-                    {/* <div className = {styles.button_container}> */}
-                        <Button text = "Save" buttonType = "submit" color = "blue" handleClick = {(e: any) => renameFolder(e)}/>
+
+                {showRenameFolder == false ? 
+                    <div>
+                        <span>📁 {json.name}</span> 
+
+                        {fileAction == "File new" && (
+                            <JSONEditor 
+                                filename = ""
+                                json = "{}"
+                                parent = {json.name}
+
+                                action = "File new"
+                                hideEditor = {() => {
+                                    setFileAction("");
+                                }}
+                            />
+                        )}
+                    </div>
+                     :
+                    <form className = {styles.folder_rename} action = {renameFolder}>
+                        <span>📁</span>
+                        <input
+                            type = "text"
+                            autoFocus
+                            className = {styles.input}
+                            required = {true}
+                            minLength = {3}
+                            placeholder = "Enter folder name"
+                            onChange = {(e) => setInputText(e.target.value)}
+                            onClick = {(e) => e.stopPropagation()}
+                        /> 
+                        {/* <Button text = "Save" buttonType = "submit" color = "blue" handleClick = {(e: any) => renameFolder(e)}/> */}
+                        <Button text = "Save" color = "blue" buttonType = "submit" handleClick = {(e: any) => {
+                            e.stopPropagation();
+                        }}/>
                         <Button text = "Cancel" color = "grey" handleClick = {(e: any) => {
                             cancelInput(e);
                             setShowRenameFolder(false);
                         }}/>
-                    {/* </div> */}
-                </form>
+                    </form>
                 }
-                {/* <span>📁 {json.name}</span> */}
 
                 <div className = {styles.button_container}>
-                    <Button text = "+ Folder" color = "grey" handleClick = {(e: any) => handleNewItem(e, true)}/>
-                    <Button text = "+ File" color = "grey" handleClick = {(e: any) => handleNewItem(e, false)}/>
+                    <Button text = "+ Folder" color = "grey" handleClick = {(e: any) => handleNewFolder(e)}/>
+                    <Button text = "+ File" color = "grey" handleClick = {(e: any) => handleNewFile(e)}/>
                     <Button text = "Rename" color = "blue" handleClick = {(e: any) => handleRenameItem(e)}/>
                     <Button text = "Delete" color = "orange" handleClick = {(e: any) => deleteItem(e)}/>
                 </div>
@@ -144,24 +185,26 @@ const Folder = ({json} : {json: any}) => {
 
                 {showInput && (
                     <div className = {styles.new_folder}>
-
-                        <form className = {styles.folder_input} onSubmit = {addItem}>
-                            {newFolder ? <span>📁</span>:  <span>📄</span>}
+                        <form className = {styles.folder_input} action = {addFolder}>
+                            <span>📁</span>
                             <input 
+                                type = "text"
+                                autoFocus
                                 className = {styles.input}
                                 required = {true}
-                                autoFocus
-                                type = "text"
-                                placeholder = "New item name"
+                                minLength = {3}
+                                placeholder = "Enter item name"
                                 onChange = {(e) => setInputText(e.target.value)}
+                                onClick = {(e) => e.stopPropagation()}
                             />
-                            <Button text = "Save" color = "blue" handleClick = {(e: any) => addItem(e)}/>
+                            <Button text = "Save" color = "blue" buttonType = "submit" handleClick = {(e: any) => {
+                                e.stopPropagation();
+                            }}/>
                             <Button text = "Cancel" color = "grey" handleClick = {(e: any) => {
                                 cancelInput(e);
                                 setShowInput(false);
                             }}/>
                         </form>
-                        
                     </div>
                 )}
 

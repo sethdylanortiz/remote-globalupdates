@@ -1,7 +1,8 @@
+
 const useTraverseTree = () => {
 
     // parent: desired subnode to be updated (or parent)
-    const insertNode = (tree: any, parent: string, newItemName: string, isFolder: boolean) => {
+    const insertNode = (tree: any, parent: string, newItemName: string, newItemValue: string, isFolder: boolean) => {
 
         // check if we're at desired sub-tree, confirm if subree is folder
         if((tree.name == parent) && (tree.__isFolder == true)) 
@@ -11,18 +12,30 @@ const useTraverseTree = () => {
                 // push new empty folder to front
                 tree.__items.unshift({
                     name: newItemName,
+                    // __id: xxx
                     __isFolder: true,
                     __items: []
                 });
             }
-            // else, add logic for new file, add passing of json editor value
+            else
+            {
+                // push new file to end
+                tree.__items.push({
+                    name: newItemName,
+                    // __id: xxx
+                    __isFolder: false,
+                    __items: [],
+                    // __value: {newItemValue}
+                    __value: JSON.parse(newItemValue)
+                });
+            }
 
             return tree;
         }
 
         // depth first search - look through entire tree to find
         let currentNode = tree.__items.map((item: any) => {
-            return insertNode(item, parent, newItemName, isFolder);
+            return insertNode(item, parent, newItemName, newItemValue, isFolder);
         });
 
         return { ...tree, __items: currentNode };
@@ -48,26 +61,32 @@ const useTraverseTree = () => {
         return { ...tree, __items: currentNode };
     }
 
-    const renameNode = (tree: any, id: number, newname: string) => {
+    const editNode = (tree: any, id: number, newItemName: string, newItemValue?: string) => {
 
         // check if we're at desired sub-tree, confirm if subree is folder
-        if((tree.__id == id) && (tree.__isFolder == true)) 
+        if(tree.__id == id) 
         {
-            // edit tree's specific name
-            tree.name = newname;
+            // edit tree's specific name: folder or file
+            tree.name = newItemName;
+
+            // request is to edit an existing file
+            if((tree.__isFolder == false) && (newItemName != undefined) && (newItemValue != undefined))
+            {
+                tree.__value = JSON.parse(newItemValue);
+            }
 
             return tree;
         }
 
         // depth first search - look through entire tree to find
         let currentNode = tree.__items.map((item: any) => {
-            return renameNode(item, id, newname);
+            return editNode(item, id, newItemName, newItemValue);
         });
 
         return { ...tree, __items: currentNode };
     }
 
-    return { insertNode, deleteNode, renameNode }
+    return { insertNode, deleteNode, /*renameNode,*/ editNode }
 };
 
 export default useTraverseTree;

@@ -18,8 +18,9 @@ const getDevelopmentJSONData = async() => {
     };
 };
 
-const updateDevelopmentJSON = async({parent, newItemName, isFolder}:
-    {parent: string, newItemName: string, isFolder: boolean}) => {
+// todo: add addition to head __id value to avoid uuid()
+const addDevelopmentJSON = async({parent, newItemName, newItemValue, isFolder}:
+    {parent: string, newItemName: string, newItemValue: string, isFolder: boolean}) => {
 
     try{
         // get current entire json (next.js cache)
@@ -28,15 +29,15 @@ const updateDevelopmentJSON = async({parent, newItemName, isFolder}:
 
         // add passed sub-json to current json
         const { insertNode } = useTraverseTree();
-        const updatedTree = insertNode(json_dev, parent, newItemName, isFolder);
+        const updatedTree = insertNode(json_dev, parent, newItemName, newItemValue, isFolder);
 
         // write to new db
         console.log("updatedTree: "); console.log(JSON.stringify(updatedTree, null, 4));
-        await writeJSONDataDB(0, JSON.stringify(updatedTree));
+        // await writeJSONDataDB(0, JSON.stringify(updatedTree));
 
         revalidatePath("/testingpage");
     }catch(error){
-        console.log("services.ts updateDevelopmentJSON() error: " + error);
+        console.log("services.ts addDevelopmentJSON() error: " + error);
         redirect("/404");
     }
 };
@@ -54,18 +55,20 @@ const deleteDevelopmentJSON = async({id}: {id: number}) => {
 
         // write to new db
         console.log("updatedTree: "); console.log(JSON.stringify(updatedTree, null, 4));
-        await writeJSONDataDB(0, JSON.stringify(updatedTree));
+        // await writeJSONDataDB(0, JSON.stringify(updatedTree));
 
         revalidatePath("/testingpage");
     }catch(error){
-        console.log("services.ts updateDevelopmentJSONData() error: " + error);
+        console.log("services.ts deleteDevelopmentJSONData() error: " + error);
         redirect("/404");
     }
 };
 
-const renameDevelopmentJSON = async({id, newname}: {id: number, newname: string}) => {
+const editDevelopmentJSON = async({id, newItemName, newItemValue}:
+     {id: number, newItemName: string, newItemValue?: string}) => {
 
-    console.log("renameDevelopmentJSON, newname: " + newname);
+    console.log("editDevelopmentJSON, newname: " + newItemName);
+    console.log("editDevelopmentJSON, newItemValue: " + newItemValue);
 
     try{
         // get current entire json (next.js cache)
@@ -73,8 +76,8 @@ const renameDevelopmentJSON = async({id, newname}: {id: number, newname: string}
         const json_dev = JSON.parse(getDBrequest.Item?.Entry); // returns type string
 
         // add passed sub-json to current json
-        const { renameNode } = useTraverseTree();
-        const updatedTree = renameNode(json_dev, id, newname);
+        const { editNode } = useTraverseTree();
+        const updatedTree = editNode(json_dev, id, newItemName, newItemValue);
 
         // write to new db
         console.log("updatedTree: "); console.log(JSON.stringify(updatedTree, null, 4));
@@ -82,93 +85,9 @@ const renameDevelopmentJSON = async({id, newname}: {id: number, newname: string}
 
         revalidatePath("/testingpage");
     }catch(error){
-        console.log("services.ts updateDevelopmentJSONData() error: " + error);
+        console.log("services.ts editDevelopmentJSON() error: " + error);
         redirect("/404");
     }
 }
 
-export { getDevelopmentJSONData, updateDevelopmentJSON, deleteDevelopmentJSON, renameDevelopmentJSON };
-
-/*
-todo: 
-    - remove "values": since we now have "__isFolder"?
-
-{
-    "name": "rootdir",
-    "__id": 100,
-    "__isFolder": true,
-    "__items": [
-        {
-            "name": "food items",
-            "__id": 1,
-            "__isFolder": true,
-            "__items": [
-                {
-                    "name": "prices",
-                    "__id": 2,
-                    "__isFolder": true,
-                    "__items": [
-                        {
-                            "name": "apple",
-                            "__id": 3,
-                            "__isFolder": false,
-                            "__items": [],
-                            "__value": {
-                                "person": "John",
-                                "age": 30,
-                                "car": 100
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "stats",
-            "__id": 65,
-            "__isFolder": true,
-            "__items": [
-                {
-                    "name": "new folder testing",
-                    "__id": 5,
-                    "__isFolder": true,
-                    "__items": []
-                },
-                {
-                    "name": "apple",
-                    "__id": 6,
-                    "__isFolder": false,
-                    "__items": [],
-                    "__value": {
-                        "person": "John",
-                        "age": 30,
-                        "car": 100
-                    }
-                },
-                {
-                    "name": "steak",
-                    "__id": 7,
-                    "__isFolder": false,
-                    "__items": [],
-                    "__value": {
-                        "person": "John",
-                        "age": 30,
-                        "car": 100
-                    }
-                }
-            ]
-        },
-        {
-            "name": "changelog",
-            "__id": 8,
-            "__isFolder": false,
-            "__items": [],
-            "__value": {
-                "person": "John",
-                "age": 30,
-                "car": 100
-            }
-        }
-    ]
-}
-*/
+export { getDevelopmentJSONData, addDevelopmentJSON, deleteDevelopmentJSON, editDevelopmentJSON };

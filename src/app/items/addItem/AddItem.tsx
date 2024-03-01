@@ -4,7 +4,7 @@ import styles from "./AddItem.module.css";
 
 // services
 import Button from '@/components/button/Button'
-import JSONEditor from '../jsonEditor/JSONEditor';
+import JSONEditor from '../../testingpage/JSONEditor/JSONEditor';
 
 const AddItem = ():JSX.Element => {
     

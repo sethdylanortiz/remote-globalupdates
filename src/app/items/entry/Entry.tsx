@@ -7,7 +7,7 @@ import { deleteItem, Item, getEntry } from "../services";
 import Button from "../../../components/button/Button";
 import Messagebox from "../../../components/messagebox/Messagebox";
 import EntryCard from "@/components/entrycard/EntryCard";
-import JSONEditor from "../jsonEditor/JSONEditor";
+import JSONEditor from "../../testingpage/JSONEditor/JSONEditor";
 
 // todo - find a better way to handle so many useState(), add useReducer?
 // todo - parge incoming item.Filename -> for folder display
