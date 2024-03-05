@@ -9,7 +9,6 @@ import JSONEditor from '@/app/testingpage/JSONEditor/JSONEditor';
 
 /*
 todo:
-    - clean up <JSONEditor/>
 
 completed: 
     - new file
@@ -23,20 +22,19 @@ completed:
 
     - fix .map multiple __id occurance problem frontend [next.js problem]
     - add min characater count checking for form inputs
+    - clean up <JSONEditor/>
 */
-export type ActionTypes = "File new" | "File edit" | "";
+export type FileActionTypes = "File new" | "File edit" | "none";
+export type FolderActionTypes = "Folder new" | "Folder rename" | "none";
 
 const Folder = ({json} : {json: any}) => {
 
     // todo: make showinput(s) usestates into .types - except for expand
-    // const [isNewFile, setIsNewFile] = useState(false);
-    const [fileAction, setFileAction] = useState<ActionTypes>("");
+    const [fileAction, setFileAction] = useState<FileActionTypes>("none");
+    const [folderAction, setFolderAction] = useState("none");
 
     const [inputText, setInputText] = useState("");
     const [expand, setExpand] = useState(false);
-    const [showInput, setShowInput] = useState(false);
-    const [showRenameFolder, setShowRenameFolder] = useState(false);
-    // const [showJSONEditor, setJSONShowEditor] = useState(false);
 
     const cancelInput = (e: any) => {
         // to prevent click-though "+ Folder / + File" buttons
@@ -45,27 +43,27 @@ const Folder = ({json} : {json: any}) => {
         e.preventDefault();
 
         setInputText("");
+        setFolderAction("none");
     }
     const handleNewFolder = (e: any) => {
         e.stopPropagation();
 
+        // expand display
         setExpand(true);
-        setShowInput(true);
+
+        setFolderAction("Folder new");
     }
     const addFolder = () => {
-
         // check request is new folder or file
         addDevelopmentJSON({parent: json.name, newItemName: inputText, newItemValue: "", isFolder: true});
         
-        setShowInput(false);
         setInputText("");
+        setFolderAction("none");
     }
     const handleNewFile = (e: any) => {
-        console.log("handleNewFile(), fileAction: " + fileAction);
         e.stopPropagation();
-        // e.preventDefault();
+        e.preventDefault();
 
-        // setJSONShowEditor(true);
         setFileAction("File new");
     }
 
@@ -76,18 +74,18 @@ const Folder = ({json} : {json: any}) => {
         // remove item
         deleteDevelopmentJSON({id: json.__id});
     }
-    const handleRenameItem = (e: any) => {
+    const handleRenameFolder = (e: any) => {
         e.stopPropagation();
         e.preventDefault();
 
-        setShowRenameFolder(true);
+        setFolderAction("Folder rename");
     }
     const renameFolder = () => {
         // rename item
         editDevelopmentJSON({id: json.__id, newItemName: inputText});
 
-        setShowRenameFolder(false);
         setInputText("");
+        setFolderAction("none");
     }
 
 
@@ -100,9 +98,6 @@ const Folder = ({json} : {json: any}) => {
                 <div className = {styles.button_container}>
                     <Button text = "Edit" color = "blue" handleClick = {(e: any) => {
                         e.stopPropagation();
-
-                        // setJSONShowEditor(true);
-                        // setIsNewFile(false);
                         
                         setFileAction("File edit");
                     }}/>
@@ -116,23 +111,21 @@ const Folder = ({json} : {json: any}) => {
                         id = {json.__id}
                         
                         hideEditor = {() => {
-                            setFileAction("");
+                            setFileAction("none");
                         }}
                         action = "File edit"
                     />
                 )}
             </div>
         )
-        
     }
-
     // else
     return (
         <div className = {styles.container}>
 
             <div className = {styles.folder} onClick = {() => setExpand(!expand)}>
 
-                {showRenameFolder == false ? 
+                {folderAction != "Folder rename" && (
                     <div>
                         <span>📁 {json.name}</span> 
 
@@ -144,12 +137,13 @@ const Folder = ({json} : {json: any}) => {
 
                                 action = "File new"
                                 hideEditor = {() => {
-                                    setFileAction("");
+                                    setFileAction("none");
                                 }}
                             />
                         )}
                     </div>
-                     :
+                )}
+                {folderAction == "Folder rename" && (
                     <form className = {styles.folder_rename} action = {renameFolder}>
                         <span>📁</span>
                         <input
@@ -162,28 +156,22 @@ const Folder = ({json} : {json: any}) => {
                             onChange = {(e) => setInputText(e.target.value)}
                             onClick = {(e) => e.stopPropagation()}
                         /> 
-                        {/* <Button text = "Save" buttonType = "submit" color = "blue" handleClick = {(e: any) => renameFolder(e)}/> */}
-                        <Button text = "Save" color = "blue" buttonType = "submit" handleClick = {(e: any) => {
-                            e.stopPropagation();
-                        }}/>
-                        <Button text = "Cancel" color = "grey" handleClick = {(e: any) => {
-                            cancelInput(e);
-                            setShowRenameFolder(false);
-                        }}/>
+                        <Button text = "Save" color = "blue" buttonType = "submit" handleClick = {(e: any) => e.stopPropagation() }/>
+                        <Button text = "Cancel" color = "grey" handleClick = {(e: any) => cancelInput(e) }/>
                     </form>
-                }
+                )}
 
                 <div className = {styles.button_container}>
                     <Button text = "+ Folder" color = "grey" handleClick = {(e: any) => handleNewFolder(e)}/>
                     <Button text = "+ File" color = "grey" handleClick = {(e: any) => handleNewFile(e)}/>
-                    <Button text = "Rename" color = "blue" handleClick = {(e: any) => handleRenameItem(e)}/>
+                    <Button text = "Rename" color = "blue" handleClick = {(e: any) => handleRenameFolder(e)}/>
                     <Button text = "Delete" color = "orange" handleClick = {(e: any) => deleteItem(e)}/>
                 </div>
             </div>
 
             <div style = {{display: expand ? "block" : "none", paddingLeft: 50}}>
 
-                {showInput && (
+                {folderAction == "Folder new" && (
                     <div className = {styles.new_folder}>
                         <form className = {styles.folder_input} action = {addFolder}>
                             <span>📁</span>
@@ -197,19 +185,13 @@ const Folder = ({json} : {json: any}) => {
                                 onChange = {(e) => setInputText(e.target.value)}
                                 onClick = {(e) => e.stopPropagation()}
                             />
-                            <Button text = "Save" color = "blue" buttonType = "submit" handleClick = {(e: any) => {
-                                e.stopPropagation();
-                            }}/>
-                            <Button text = "Cancel" color = "grey" handleClick = {(e: any) => {
-                                cancelInput(e);
-                                setShowInput(false);
-                            }}/>
+                            <Button text = "Save" color = "blue" buttonType = "submit" handleClick = {(e: any) => e.stopPropagation() }/>
+                            <Button text = "Cancel" color = "grey" handleClick = {(e: any) => cancelInput(e)}/>
                         </form>
                     </div>
                 )}
 
-                {
-                    json.__items.map((item: any) => {
+                { json.__items.map((item: any) => {
                         return <Folder json = {item} key = {json.__id}/>
                     })
                 }

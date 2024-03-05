@@ -6,24 +6,24 @@ import styles from "./jsoneditor.module.css";
 import { Editor } from '@monaco-editor/react';
 import Button from '@/components/button/Button';
 import Messagebox from '@/components/messagebox/Messagebox';
-import { ActionTypes } from '../Folder/Folder';
+import { FileActionTypes } from '../Folder/Folder';
 import { addDevelopmentJSON, editDevelopmentJSON } from '../services';
 
 /*
 todo:
     - add version calling and passing to dynamodb.js
-    - add uuid()
     - add doesItemExist() ?
     - add onblur from content container
     - clean up states
     - clean up messagebox displays
 
 done: 
+    - add uuid()
     - add e.stopPropogation when jsonEditor click
 */
 // export const JSONEditor = ({filename, json, hideEditor, action}: {filename: string, json: string, hideEditor: any, action: ActionTypes}):JSX.Element => {
 export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
-     {filename: string, json: string, parent?: string, id?: number, hideEditor: any, action: ActionTypes}):JSX.Element => {
+     {filename: string, json: string, parent?: string, id?: number, hideEditor: any, action: FileActionTypes}):JSX.Element => {
 
     const [tempJSON, setTempJSON] = useState(json);
     const [tempFilename, setTempFilename] = useState(filename);
@@ -32,7 +32,7 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
 
     const editorRef = useRef(null);
     const handleEditorDidMount = (editor: any, monaco: any) => {
-        console.log("insdie handleEditorDidMount()!");
+        console.log("inside handleEditorDidMount()!");
         editorRef.current = editor; 
     }
     const handleEditorUnmount = () => {

@@ -12,7 +12,7 @@ const useTraverseTree = () => {
                 // push new empty folder to front
                 tree.__items.unshift({
                     name: newItemName,
-                    // __id: xxx
+                    __id: Date.now(),
                     __isFolder: true,
                     __items: []
                 });
@@ -22,11 +22,11 @@ const useTraverseTree = () => {
                 // push new file to end
                 tree.__items.push({
                     name: newItemName,
-                    // __id: xxx
+                    __id: Date.now(),
                     __isFolder: false,
                     __items: [],
                     // __value: {newItemValue}
-                    __value: JSON.parse(newItemValue)
+                    __value: JSON.parse(newItemValue) 
                 });
             }
 
