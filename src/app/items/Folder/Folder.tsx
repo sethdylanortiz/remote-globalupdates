@@ -5,12 +5,12 @@ import styles from "./folder.module.css";
 // services
 import Button from '@/components/button/Button';
 import { addDevelopmentJSON, deleteDevelopmentJSON, editDevelopmentJSON } from '../services';
-import JSONEditor from '@/app/testingpage/JSONEditor/JSONEditor';
+import JSONEditor from '@/app/items/JSONEditor/JSONEditor';
 
 /*
 todo:
 
-completed: 
+done: 
     - new file
     - edit file
 

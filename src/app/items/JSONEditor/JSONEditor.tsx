@@ -9,22 +9,23 @@ import Messagebox from '@/components/messagebox/Messagebox';
 import { FileActionTypes } from '../Folder/Folder';
 import { addDevelopmentJSON, editDevelopmentJSON } from '../services';
 
+
 /*
 todo:
-    - add version calling and passing to dynamodb.js
     - add doesItemExist() ?
     - add onblur from content container
-    - clean up states
     - clean up messagebox displays
 
 done: 
+    - add version calling and passing to dynamodb.js
     - add uuid()
     - add e.stopPropogation when jsonEditor click
+    - clean up states
 */
 // export const JSONEditor = ({filename, json, hideEditor, action}: {filename: string, json: string, hideEditor: any, action: ActionTypes}):JSX.Element => {
 export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
      {filename: string, json: string, parent?: string, id?: number, hideEditor: any, action: FileActionTypes}):JSX.Element => {
-
+    
     const [tempJSON, setTempJSON] = useState(json);
     const [tempFilename, setTempFilename] = useState(filename);
     const [newFilename, setNewFilename] = useState(filename);

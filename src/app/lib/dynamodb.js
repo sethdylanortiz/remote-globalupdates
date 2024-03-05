@@ -6,6 +6,19 @@ aws sdk v3
 import { DynamoDBClient, ReturnValue } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ScanCommand, DeleteCommand} from '@aws-sdk/lib-dynamodb';
 
+const getLiveVersionDB = () => {
+    
+    // aws db schema: Key '0' (number) holds Live version (string)
+    const params = {
+        TableName: process.env.TABLE_NAME_LIVE_VERSIONING,
+        Key: {
+            Version: 0
+        }
+    };
+
+    return doc_client.send(new GetCommand(params));
+};
+
 const database_client = new DynamoDBClient({
     region: process.env.TABLE_REGION,
     credentials: {
@@ -57,17 +70,6 @@ const deleteEntryDB = (filename, config) => {
     };
 
     return doc_client.send(new DeleteCommand(params));
-};
-
-const getLiveVersionDB = () => {
-    const params = {
-        TableName: process.env.TABLE_NAME_PRODUCTION,
-        Key: {
-            Filename: "VERSION"
-        }
-    };
-
-    return doc_client.send(new GetCommand(params));
 };
 
 // for versioning page
