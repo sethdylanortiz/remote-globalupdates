@@ -1,6 +1,6 @@
 "use server";
 import { redirect } from "next/navigation"; // https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirect-function
-import { getLiveVersionDB } from "../lib/dynamodb";
+import { getLiveVersionDB, getJSONDataDB } from "../lib/dynamodb";
 
 const getVersion = async() => {
 
@@ -22,4 +22,32 @@ const getVersion = async() => {
     };
 };
 
-export { getVersion };
+const getCurrentLiveJSONData = async() => {
+    try{
+        // get current version
+        const versionNumber = await getVersion();
+
+        const request = await getJSONDataDB(versionNumber, "Live");
+        // console.log("getDevelopmentJSONData(), request: "); console.log(request);
+        
+        return request.Item ? JSON.parse(request.Item.Entry) : redirect("/404");
+    }catch(error){
+        console.log("services.ts getDevelopmentJSONData() error: " + error);
+        redirect("/404");
+    };
+};
+
+const getJSONData = async(versionNumber: number, tableType: string) => {
+
+    console.log("versionNumber: " + versionNumber + ", " + typeof versionNumber);
+    try{
+        const request = await getJSONDataDB(versionNumber, tableType);
+        
+        return request.Item ? JSON.parse(request.Item.Entry) : redirect("/404");
+    }catch(error){
+        console.log("services.ts getDevelopmentJSONData() error: " + error);
+        redirect("/404");
+    };
+};
+
+export { getVersion, getCurrentLiveJSONData, getJSONData };

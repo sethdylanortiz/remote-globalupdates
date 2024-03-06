@@ -1,47 +1,55 @@
 import React from 'react'
 import styles from "./versionspage.module.css";
+import Link from 'next/link';
 
 // services 
-import { getVersions } from './services';
-import VersionCard from './versionCard/VersionCard';
+import { getVersion, getCurrentLiveJSONData } from '../glabal_services/globalservices';
+import Button from '@/components/button/Button';
 
-// services - other
-import { getCurrentLiveVersion } from '../merge/services';
 
-/*
-todo:
-- create services.ts
-    - function() to take data from Live db -> transform into large json for version db
-        - this should be in /merge's services, after merge push to versions db 
-    - "revert" button after clicking
-- since this page and /merge page have same page - look into creating new route
-    and displaying the "header_section" on both then render children - therefore,
-    only have to call/re-render/revalidate current_version in one place
-*/
 const VersionPage = async() => {
 
     // get current live version
-    const current_version = await getCurrentLiveVersion();
-
-    const {versions_obj} = await getVersions();
-    const version_arr = JSON.parse(JSON.stringify(versions_obj));
+    const currentLiveVersion = await getVersion();
+    
+    // get last 10 versions
+    var versions = [];
+    for(var i = currentLiveVersion - 1; i > currentLiveVersion - 7; i--)
+    {
+        versions.push(i);
+    }
 
     return (
         <div className = {styles.container}>
 
-            <div className = {styles.header_section}>
-                <div className = {styles.header_text}>
-                        <p>Select a configuration version to view</p>
-                        <p>Current Live version: {current_version} </p>
-                </div>
+            <div className = {styles.instruction}>
+                <p>Select a version to view</p>
             </div>
 
-            <div className = {styles.cards_container}>
-                {version_arr.map((configuration: any) =>
-                    <div className = {styles.card} key = {configuration.Version}>
-                        <VersionCard version = {configuration.Version} item = {JSON.stringify(JSON.parse(configuration.Item), null, 4)}/>
-                    </div>
-                )}
+            <Link href = {`/versioning/${currentLiveVersion}`}>
+                <div className = {styles.versionCard}>
+
+                    <p>View current live version: <span>{currentLiveVersion}</span></p>  
+                    <Button text = "View" color = "blue"/>
+
+                </div>
+            </Link>
+
+            {versions.map((version: number) => {
+                return(
+                    <Link href = {`/versioning/${version}`}>
+                        <div className = {styles.versionCard}>
+        
+                            <p>View version: <span>{version}</span></p>  
+                            <Button text = "View" color = "blue"/>
+        
+                        </div>
+                    </Link>
+                )
+            })}
+
+            <div className = {styles.instruction}>
+                <p>To view an even older version, enter the version in the hyper link, example: BPRemoteConfig/versioning/x</p>
             </div>
 
         </div>

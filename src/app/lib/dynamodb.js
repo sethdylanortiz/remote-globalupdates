@@ -113,9 +113,12 @@ const getFileNamesDB = () => {
     return doc_client.send(new ScanCommand(params));
 };
 
-const getJSONDataDB = (version) => {
+const getJSONDataDB = (version, type) => {
+
+    const table = type == "Live" ? process.env.TABLE_NAME_LIVE_VERSIONING : process.env.TABLE_NAME_DEVELOPMENT;
+
     const params = {
-        TableName: process.env.TABLE_NAME_LIVE_VERSIONING,
+        TableName: table,
         Key: {
             Version: version
         }
@@ -140,6 +143,24 @@ const writeJSONDataDB = (version, updatedItem) => {
     return doc_client.send(new UpdateCommand(params));
 }
 
+// method to update '0' entry - aka. live db version
+const updateLiveVersionDB = (newVersion) => {
+    const params = {
+        TableName: process.env.TABLE_NAME_LIVE_VERSIONING,
+        Key: {
+            Version: 0
+        },
+        UpdateExpression: "SET Entry = :p",
+        ExpressionAttributeValues: {
+            ":p": toString(newVersion)
+        },
+        ReturnValues: "ALL_NEW"
+    };
+
+    return doc_client.send(new UpdateCommand(params));
+};
+
+// todo: clean up these returns
 export { getItemsDB, updateEntryDB, deleteEntryDB, getConfigVersionsDB,
      updateConfigVersionsDB, getLiveVersionDB, getItemDB, getFileNamesDB,
-     getJSONDataDB, writeJSONDataDB }
+     getJSONDataDB, writeJSONDataDB, updateLiveVersionDB }

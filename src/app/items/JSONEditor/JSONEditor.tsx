@@ -9,7 +9,6 @@ import Messagebox from '@/components/messagebox/Messagebox';
 import { FileActionTypes } from '../Folder/Folder';
 import { addDevelopmentJSON, editDevelopmentJSON } from '../services';
 
-
 /*
 todo:
     - add doesItemExist() ?
@@ -120,6 +119,9 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
                     </div>
 
                     <input
+                        // for "none" state, readonly
+                        readOnly = {action == "none" ? true: false}
+
                         type = "text" 
                         autoFocus
                         className = {styles.filename_textarea}
@@ -138,14 +140,21 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
                         defaultLanguage = "json"
                         defaultValue = {JSON.stringify(JSON.parse(tempJSON), null, 4)}
                         onMount = {handleEditorDidMount}
+
+                        // for "none" state, readonly
+                        options = {{
+                            readOnly: action == "none" ? true : false
+                        }}
                     />
-                    <div className = {styles.save_close_buttons}>
-                        {/* <Button buttonType = "submit" text = "Save" color = "blue"/> */}
-                        <Button text = "Save" color = "blue" handleClick = {(e: any) => handleSave(e)}/>
-                        <Button text = "Close" color = "grey" handleClick = {() => {        
-                            handleEditorUnmount();
-                        }}/> 
-                    </div>
+                    
+                        <div className = {styles.save_close_buttons}>
+                            {action !== "none" && (
+                                <Button text = "Save" color = "blue" handleClick = {(e: any) => handleSave(e)}/>
+                            )}
+                            <Button text = "Close" color = "grey" handleClick = {() => {        
+                                handleEditorUnmount();
+                            }}/> 
+                        </div>
                 </form>
             </div>
 

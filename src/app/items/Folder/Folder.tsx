@@ -27,7 +27,7 @@ done:
 export type FileActionTypes = "File new" | "File edit" | "none";
 export type FolderActionTypes = "Folder new" | "Folder rename" | "none";
 
-const Folder = ({json} : {json: any}) => {
+const Folder = ({json}: {json: any}) => {
 
     // todo: make showinput(s) usestates into .types - except for expand
     const [fileAction, setFileAction] = useState<FileActionTypes>("none");
@@ -55,7 +55,7 @@ const Folder = ({json} : {json: any}) => {
     }
     const addFolder = () => {
         // check request is new folder or file
-        addDevelopmentJSON({parent: json.name, newItemName: inputText, newItemValue: "", isFolder: true});
+        addDevelopmentJSON({parentId: json.__id, newItemName: inputText, newItemValue: "", isFolder: true});
         
         setInputText("");
         setFolderAction("none");

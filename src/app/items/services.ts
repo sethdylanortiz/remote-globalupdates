@@ -23,8 +23,8 @@ const getDevelopmentJSONData = async() => {
 };
 
 // todo: add addition to head __id value to avoid uuid()
-const addDevelopmentJSON = async({parent, newItemName, newItemValue, isFolder}:
-    {parent: string, newItemName: string, newItemValue: string, isFolder: boolean}) => {
+const addDevelopmentJSON = async({parentId, newItemName, newItemValue, isFolder}:
+    {parentId: number, newItemName: string, newItemValue: string, isFolder: boolean}) => {
 
     try{
         // get current version
@@ -36,7 +36,7 @@ const addDevelopmentJSON = async({parent, newItemName, newItemValue, isFolder}:
 
         // add passed sub-json to current json
         const { insertNode } = useTraverseTree();
-        const updatedTree = insertNode(json_dev, parent, newItemName, newItemValue, isFolder);
+        const updatedTree = insertNode(json_dev, parentId, newItemName, newItemValue, isFolder);
 
         // write to new db
         console.log("updatedTree: "); console.log(JSON.stringify(updatedTree, null, 4));
