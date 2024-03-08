@@ -7,7 +7,7 @@ import Folder from "./Folder/Folder";
 
 const TestingPage = async() => {
 
-    const development_items = await getDevelopmentJSONData();
+    const development_items = await getDevelopmentJSONData("development");
 
     return (
         <div className = {styles.container}> 

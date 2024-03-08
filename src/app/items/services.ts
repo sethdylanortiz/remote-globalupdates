@@ -7,12 +7,12 @@ import { getJSONDataDB, writeJSONDataDB } from "../lib/dynamodb";
 import useTraverseTree from "./Hooks/use-traverse-tree"; 
 import { getVersion } from "../glabal_services/globalservices";
 
-const getDevelopmentJSONData = async() => {
+const getDevelopmentJSONData = async(table: string) => {
     try{
-        // get current version
-        const versionNumber = await getVersion();
+        // get current version - if Live is requested, getCurrentLiveVersion
+        const versionNumber = table == "Live" ? await getVersion(): 0;
 
-        const request = await getJSONDataDB(versionNumber);
+        const request = await getJSONDataDB(versionNumber, table);
         // console.log("getDevelopmentJSONData(), request: "); console.log(request);
         
         return request.Item ? JSON.parse(request.Item.Entry) : redirect("/404");

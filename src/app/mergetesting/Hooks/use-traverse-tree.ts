@@ -1,4 +1,97 @@
+import { TreeData } from "../services";
+
 const useTraverseTree = () => {
+
+        // https://www.tutorialspoint.com/fetching-object-keys-using-recursion-in-javascript
+        // https://stackoverflow.com/questions/52423842/what-is-not-assignable-to-parameter-of-type-never-error-in-typescript
+        const getTreeData = (tree: any, treeData: any[] = [], parentId?: number) => {
+            const iter = treeData;
+
+            if(tree.__isFolder)
+            {
+                iter.push({
+                    parentId: parentId,
+                    id: tree.__id,
+                    fileValue: null
+                });
+
+                for(const index in tree.__items)
+                {
+                    const item = tree.__items[index];
+                    getTreeData(item, iter, tree.__id);
+                }
+            }
+            else
+            {
+                iter.push({
+                    parentId: parentId,
+                    id: tree.__id,
+                    fileValue: tree.__value
+                });
+            }
+            return iter;
+        };
+
+        // funtion to traverse tree looking for id's to marking change type and add file difference
+        // const markTree = (tree: any, differenceType: string, diffItem: TreeData[]) => {
+        const markTree = (tree: any, differenceType: string, diffItems: TreeData[]) => {
+
+
+            // check if current node contains an id in diffItems[]
+            const foundIndex = diffItems.findIndex((item: TreeData) => item.id == tree.__id);
+            // console.log("foundIndex: " + foundIndex);
+            if(foundIndex !== -1)
+            {
+                tree = {
+                    difference: differenceType,
+                    ...tree
+                };
+
+                if(differenceType == "Edited")
+                {
+                    tree.__value = diffItems[foundIndex].fileValue;
+                }
+                return tree;
+            }
+
+            let currentNode = tree.__items.map((child: any) => {
+                return markTree(child, differenceType, diffItems);
+            });
+
+            return { ...tree, __items: currentNode };
+
+            // if(tree.__id == diffItem.id)
+            // {
+            //     // tree.difference = differenceType;
+            //     console.log(differenceType);
+            //     tree = {
+            //         difference: differenceType,
+            //         ...tree
+            //     }
+
+            //     if(differenceType == "Edited")
+            //     {
+            //         tree.__value = diffItem.fileValue;
+            //     }
+
+            //     return tree;
+            // };
+
+            // let currentNode = tree.__items.map((item: any) => {
+            //     return markTree(item, differenceType, diffItem);
+            // });
+
+            // return { ...tree, __items: currentNode };
+        }
+
+    return { getTreeData, markTree };
+};
+
+export default useTraverseTree;
+
+
+
+/*
 
     // https://www.tutorialspoint.com/fetching-object-keys-using-recursion-in-javascript
     const getIds = (tree: any, results = []) => {
@@ -24,83 +117,4 @@ const useTraverseTree = () => {
         return iter;
     };
 
-
-    const traverseTree = (tree: any) => {
-
-        // get current sub tree1's id and check if exists inside tree2
-        
-        // const responseTree = markNode(tree2, tree1.__id, tree1.__value);
-
-        // base case: if we reach end of tree, stop traversing
-        if(tree.__items.length == 0)
-        {
-            console.log("id: " + tree.__id + ":    " + tree.name);
-            return tree.__id;
-        }
-        
-        // otherwise, print name
-        // console.log("id: " + tree1.__id + ":   " + tree1.name);
-
-        // and perform the similar logic for the subtrees of each node
-        const response = tree.__items.map((child: any) => {
-            return traverseTree(child);
-        });
-
-
-
-        return response;
-    };
-
-    const markNode = (tree: any, id: number, fileValue?: string) => {
-
-        console.log(tree);
-
-        // check if we've found desired node
-        if(tree.__id == id)
-        {
-            var differenceType = "none";
-
-            // check if current node is file 
-            if(tree.__isFolder == false)
-            {
-                // check if JSON __value are equal
-                if(tree.__value != fileValue)
-                {
-                    differenceType = "edited"
-                }
-            }
-
-            // mark and return found tree with any differences
-            tree.__items = {
-                ...tree.__items,
-                __difference: differenceType
-            }
-
-            return tree;
-        }
-
-        let currentNode = tree.__items.map((item: any) => {
-            return markNode(item, id, fileValue);
-        });
-
-
-
-        // check if tree was deleted (not found)
-        // if (currentNode.length == 0)
-        // {
-        //     // mark node as deleted
-        //     devTree.__items = {
-        //         ...devTree.__items,
-        //         __difference: "deleted"
-        //     }
-        // }
-
-
-
-        return { ...tree, __items: currentNode };
-    };
-
-    return { traverseTree, markNode, getIds};
-};
-
-export default useTraverseTree;
+*/

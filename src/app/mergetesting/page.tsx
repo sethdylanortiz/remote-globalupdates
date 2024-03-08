@@ -5,7 +5,7 @@ import styles from "./mergepage.module.css";
 
 // services
 import Folder from "./Folder/Folder";
-import { compareJSON } from "./services";
+import { compareTrees } from "./services";
 
 /*
 todo:
@@ -58,19 +58,8 @@ const devJSON = {
             ]
         },
         {
-            "name": "changelog",
-            "__id": 8,
-            "__isFolder": false,
-            "__items": [],
-            "__value": {
-                "person": "John",
-                "age": 30,
-                "car": 100
-            }
-        },
-        {
             "name": "newtesting",
-            "__id": 1w9,
+            "__id": 19,
             "__isFolder": false,
             "__items": [],
             "__value": {
@@ -104,9 +93,20 @@ const liveJSON = {
                     "__isFolder": false,
                     "__items": [],
                     "__value": {
-                        "person": "Seth",
+                        "person": "John",
                         "age": 30,
                         "car": 100
+                    }
+                },
+                {
+                    "name": "steak",
+                    "__id": 7,
+                    "__isFolder": false,
+                    "__items": [],
+                    "__value": {
+                        "person": "John",
+                        "age": 30,
+                        "car": 102
                     }
                 }
             ]
@@ -121,6 +121,17 @@ const liveJSON = {
                 "age": 30,
                 "car": 100
             }
+        },
+        {
+            "name": "newtesting",
+            "__id": 29,
+            "__isFolder": false,
+            "__items": [],
+            "__value": {
+                "person": "seth",
+                "age": 30,
+                "car": 100
+            }
         }
     ]
 }
@@ -130,7 +141,7 @@ const MergePage = async() => {
     // get currrent development & live version configuration
 
     // call function to compare both jsons, and tag each one with a new entry!
-    compareJSON(devJSON, liveJSON);
+    compareTrees(devJSON, liveJSON);
 
     return (
         <div className = {styles.container}> 

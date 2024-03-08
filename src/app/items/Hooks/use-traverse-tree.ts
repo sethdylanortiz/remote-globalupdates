@@ -87,7 +87,7 @@ const useTraverseTree = () => {
         return { ...tree, __items: currentNode };
     }
 
-    return { insertNode, deleteNode, /*renameNode,*/ editNode }
+    return { insertNode, deleteNode, editNode }
 };
 
 export default useTraverseTree;
