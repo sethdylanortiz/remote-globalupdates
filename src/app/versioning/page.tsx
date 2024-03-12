@@ -3,7 +3,7 @@ import styles from "./versionspage.module.css";
 import Link from 'next/link';
 
 // services 
-import { getVersion, getCurrentLiveJSONData } from '../glabal_services/globalservices';
+import { getVersion, getCurrentLiveJSONData } from '../global_services/globalservices';
 import Button from '@/components/button/Button';
 
 

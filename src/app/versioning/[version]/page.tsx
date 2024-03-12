@@ -4,7 +4,7 @@ import styles from "./version.module.css";
 
 // services
 import Folder from "../Folder/Folder";
-import { getJSONData } from "@/app/glabal_services/globalservices";
+import { getJSONData } from "@/app/global_services/globalservices";
 import RevertButton from "../revertButton/RevertButton";
 
 const Version = async({ params }: { params: any }) => {

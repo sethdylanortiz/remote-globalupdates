@@ -5,7 +5,7 @@ import useTraverseTree from "./Hooks/use-traverse-tree";
 export type TreeData = { parentId: number, name: string, id: number, fileValue: string | null }
 export type TreeDataEdited = { id: number, name: string, devFileValue: string }
 
-import { getJSONData, getCurrentLiveJSONData } from "../glabal_services/globalservices";
+import { getJSONData, getCurrentLiveJSONData } from "../global_services/globalservices";
 import { getLiveVersionDB, updateLiveVersionDB, writeJSONDataDB } from "../lib/dynamodb";
 import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
 

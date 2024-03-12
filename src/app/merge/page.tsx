@@ -8,6 +8,7 @@ import Folder from "./Folder/Folder";
 import MergeButton from "./MergeButton/MergeButton";
 import { compareTrees } from "./services";
 import Link from "next/link";
+import { getVersion } from "../global_services/globalservices";
 
 /*
 todo:
@@ -26,9 +27,15 @@ const MergePage = async() => {
     
     const mergeJSON = await compareTrees();
     // console.log("$ mergeJSON: "); console.log(JSON.stringify(mergeJSON, null, 4));
+    const currentLiveVersion = await getVersion();
 
     return (
         <div>
+
+            <div className = {styles.versionContainer}>
+                <span>Current live version: <span style = {{fontWeight: "bold"}}>{currentLiveVersion}</span></span>
+            </div>
+
             {mergeJSON === -1 ? 
                 <div className = {styles.message}>
 

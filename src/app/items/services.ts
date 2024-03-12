@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-
 // services
 import { getJSONDataDB, writeJSONDataDB } from "../lib/dynamodb";
 import useTraverseTree from "./Hooks/use-traverse-tree"; 
-import { getVersion } from "../glabal_services/globalservices";
+import { getVersion } from "../global_services/globalservices";
 
 const getDevelopmentJSONData = async(table: string) => {
     try{
