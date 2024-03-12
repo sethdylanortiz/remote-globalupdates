@@ -1,58 +1,53 @@
+"use server";
+
 import React from "react";
 import styles from "./mergepage.module.css";
 
 // services
-import DiffEntry from "@/app/merge/diffEntry/DiffEntry";
-import MergeButton from "./mergeButton/MergeButton";
-import { getDifferenceEntries, getItemsDatabase, getCurrentLiveVersion, Item, SyncedItem} from "./services";
+import Folder from "./Folder/Folder";
+import MergeButton from "./MergeButton/MergeButton";
+import { compareTrees } from "./services";
+import Link from "next/link";
+
+/*
+todo:
+- add suspense
+
+done:
+- aws call in services for current Live version
+- aws call in services for current development version
+- comparsion and folder display
+- add merge button
+- add no change display
+
+*/
 
 const MergePage = async() => {
+    
+    const mergeJSON = await compareTrees();
+    // console.log("$ mergeJSON: "); console.log(JSON.stringify(mergeJSON, null, 4));
 
-    // get current live version
-    const current_version = await getCurrentLiveVersion();
-    const {entries_dev_arr, entries_prod_arr} = await getItemsDatabase();
-    const res_obj = await getDifferenceEntries(JSON.stringify(entries_dev_arr), JSON.stringify(entries_prod_arr));
-    const {newItems, syncedItemsDiffentEntry, deletedItems} = JSON.parse(res_obj);
+    return (
+        <div>
+            {mergeJSON === -1 ? 
+                <div className = {styles.message}>
 
-    return(
-        <div className = {styles.container}>
-            
-            <div className = {styles.header_section}>
-                <div className = {styles.header_text}>
-                        <p>The following entries are to be updated, added, or deleted:</p>
-                        <p>Current Live version: {current_version}</p>
+                    <span>There are no current changes made to the Development configuration</span>
+                    <br/>
+                    <span>Navigate to the <Link href = "/items" className = {styles.link}> Development</Link> to start editing</span>
+                
                 </div>
-            </div>
-            
-            { newItems.length == 0 && syncedItemsDiffentEntry.length == 0 && deletedItems.length == 0 ? 
-                <section className = {styles.no_changes_message_container}>
-                    <p>Looks like the Live database is up to date...</p>
-                </section>
                 :
-                <div className = {styles.cards_container}>
-                    {newItems.map((item: Item) => 
-                        <DiffEntry item = {item} item_type = "new" key = {item.Filename}/>
-                    )}
-                    {syncedItemsDiffentEntry.map((item: SyncedItem) => 
-                        <DiffEntry item = {item} item_type = "synced" key = {item.Filename}/>
-                    )}
-                    {deletedItems.map((item: Item) => 
-                        <DiffEntry item = {item} item_type = "deleted" key = {item.Filename}/>
-                    )}
-                    
-                    <div className = {styles.merge_button_container}>
-                        <MergeButton 
-                            newItems = {newItems} 
-                            syncedItemsDiffentEntry = {syncedItemsDiffentEntry} 
-                            deletedItems = {deletedItems}
-                            currentVersion = {current_version}
-                        />
-                    </div>
+                <div className = {styles.container}>
+
+                    <Folder tree = {mergeJSON}/>
+                    <MergeButton/>
+
                 </div>
             }
-
         </div>
-    );
+    )
+
 }
 
-export default MergePage;
+export default MergePage;  

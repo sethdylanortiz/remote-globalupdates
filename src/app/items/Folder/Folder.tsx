@@ -11,18 +11,7 @@ import JSONEditor from '@/app/items/JSONEditor/JSONEditor';
 todo:
 
 done: 
-    - new file
-    - edit file
 
-    - delete file 
-
-    - new folder
-    - edit folder name
-    - delete folder
-
-    - fix .map multiple __id occurance problem frontend [next.js problem]
-    - add min characater count checking for form inputs
-    - clean up <JSONEditor/>
 */
 export type FileActionTypes = "File new" | "File edit" | "none";
 export type FolderActionTypes = "Folder new" | "Folder rename" | "none";
@@ -133,7 +122,7 @@ const Folder = ({json}: {json: any}) => {
                             <JSONEditor 
                                 filename = ""
                                 json = "{}"
-                                parent = {json.name}
+                                parent = {json.id}
 
                                 action = "File new"
                                 hideEditor = {() => {

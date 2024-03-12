@@ -23,7 +23,7 @@ done:
 */
 // export const JSONEditor = ({filename, json, hideEditor, action}: {filename: string, json: string, hideEditor: any, action: ActionTypes}):JSX.Element => {
 export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
-     {filename: string, json: string, parent?: string, id?: number, hideEditor: any, action: FileActionTypes}):JSX.Element => {
+     {filename: string, json: string, parent?: number, id?: number, hideEditor: any, action: FileActionTypes}):JSX.Element => {
     
     const [tempJSON, setTempJSON] = useState(json);
     const [tempFilename, setTempFilename] = useState(filename);
@@ -46,17 +46,12 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
     }
 
     const handleSave = async(e: any) => {
-        console.log("inside handleSave!()");
-
         // if editor is not mounted, ignore request
         if(editorRef.current == null)
             return;
 
-        console.log("made it 1");
-
         let formError = "";
         var curJSON_trim, newJSON_trim, curFilename_trim, newFilename_trim;
-
         try{
             // check if valid json
             [curJSON_trim, newJSON_trim] = [JSON.stringify(JSON.parse(tempJSON)), JSON.stringify(JSON.parse(editorRef.current.getValue()))];
@@ -74,7 +69,6 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
             formError += error;
         }
 
-
         if(formError != "")
         {
             console.log("formError: " + formError);
@@ -82,11 +76,10 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
         }
         else 
         {
-            console.log("INSIDE ELSE!");
             if(action == "File new")
             {
                 await addDevelopmentJSON({ 
-                    parent: parent as string, // "as string" - to resolve "!" non-null assertion
+                    parentId: parent as number, // "as x" - to resolve "!" non-null assertion
                     newItemName: newFilename_trim as string,
                     newItemValue: newJSON_trim as string,
                     isFolder: false,
@@ -107,21 +100,18 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
 
             setMessage({type: "success", value: `Success adding "${newFilename}" into Development database`});
         }
-
     }
 
     return (
         <div className = {styles.container} onClick = {(e: any) => e.stopPropagation()}>
             <div className = {styles.background_opacity}>
+
                 <form action = {handleSave} className = {styles.editor_container}>
                     <div className = {styles.filename_header}> 
                         <p>Current file</p>
                     </div>
 
                     <input
-                        // for "none" state, readonly
-                        readOnly = {action == "none" ? true: false}
-
                         type = "text" 
                         autoFocus
                         className = {styles.filename_textarea}
@@ -130,6 +120,9 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
                         minLength = {3}
                         onChange = {(event) => setNewFilename(event.target.value)}
                         placeholder = "Enter Filename"
+
+                        // for "none" state, readonly
+                        readOnly = {action == "none" ? true: false}
                     />
 
                     <Editor
@@ -147,15 +140,16 @@ export const JSONEditor = ({filename, json, parent, id, hideEditor, action}:
                         }}
                     />
                     
-                        <div className = {styles.save_close_buttons}>
-                            {action !== "none" && (
-                                <Button text = "Save" color = "blue" handleClick = {(e: any) => handleSave(e)}/>
-                            )}
-                            <Button text = "Close" color = "grey" handleClick = {() => {        
-                                handleEditorUnmount();
-                            }}/> 
-                        </div>
+                    <div className = {styles.save_close_buttons}>
+                        {action !== "none" && (
+                            <Button text = "Save" color = "blue" handleClick = {(e: any) => handleSave(e)}/>
+                        )}
+                        <Button text = "Close" color = "grey" handleClick = {() => {        
+                            handleEditorUnmount();
+                        }}/> 
+                    </div>
                 </form>
+
             </div>
 
             {message.type == "error" && 

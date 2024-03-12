@@ -10,6 +10,7 @@ import Button from '@/components/button/Button';
 const VersionPage = async() => {
 
     // get current live version
+    console.log("VERSION PAGE!!");
     const currentLiveVersion = await getVersion();
     
     // get last 10 versions

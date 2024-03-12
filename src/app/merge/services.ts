@@ -1,150 +1,120 @@
 "use server";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation"; // https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirect-function
+import useTraverseTree from "./Hooks/use-traverse-tree";
 
-// services
-import { getItemsDB, updateEntryDB, deleteEntryDB, updateConfigVersionsDB, getLiveVersionDB } from "../lib/dynamodb";
+export type TreeData = { parentId: number, name: string, id: number, fileValue: string | null }
+export type TreeDataEdited = { id: number, name: string, devFileValue: string }
 
-export type Item = {
-    Filename: string,
-    Entry: string
-};
-export type Items = Item[];
+import { getJSONData, getCurrentLiveJSONData } from "../glabal_services/globalservices";
+import { getLiveVersionDB, updateLiveVersionDB, writeJSONDataDB } from "../lib/dynamodb";
+import { revalidatePath } from "next/cache"; // https://nextjs.org/docs/app/api-reference/functions/revalidatePath
 
-export type SyncedItem = {
-    Filename: string,
-    dev_entry: string,
-    prod_entry: string
-};
-export type SyncedItems = SyncedItem[];
+// function to compare two tree's values
+const compareTrees = async() => {
 
-const getItemsDatabase = async() => {
-    try{
-        const [items_dev_obj, unfiltered_items_prod_obj] = await Promise.all([getItemsDB("development"), getItemsDB("production")]);
-        const items_prod_obj = unfiltered_items_prod_obj.Items?.filter((item: any) => item.Filename !== "VERSION" );
-        return {entries_dev_arr: items_dev_obj.Items, entries_prod_arr: items_prod_obj};
-    } catch(error){
-        console.log("services.ts getItemsDatabase() error: " + error);
-        redirect("/404");
-    };
-};
+    // get development and live JSON from database
+    const devJSON = await getJSONData(0, "Development");
+    const liveJSON = await getCurrentLiveJSONData();
 
-const getCurrentLiveVersion = async() => {
-    try{
-        const request = await getLiveVersionDB();
-        return request.Item ? Number(request.Item.Entry) : redirect("/404");
-    }catch(error){
-        console.log("services.ts getCurrentLiveVersion() error: " + error);
-        redirect("/404");
-    };
+    const { getTreeData, markTree } = useTraverseTree();
+    const devTreeData = getTreeData(devJSON); 
+    const liveTreeData = getTreeData(liveJSON);
+    // console.log("devTreeData: "); console.log(devTreeData);
+    // console.log("liveTreeData: "); console.log(liveTreeData);
 
-};
+    // SYNCED: items that exist in both AND include differences
+    var editedItems = new Array();
+    devTreeData.map((devItem: TreeData) => {
+        // find __id's that exist in both objs && contain differnce in entry
+        let found_index = liveTreeData.findIndex((liveItem: TreeData) => liveItem.id === devItem.id);
 
-// compare objects, find differences - to be mapped and displayedmain.ts(31,31): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ filename: string; entry: string; }'.
-// todo - edit function, put logic into for loop to iterate and add changes in order of dev_obj
-const getDifferenceEntries = async(dev_obj_str: string, prod_obj_str: string) => {
+        if(found_index !== -1 && liveTreeData[found_index].fileValue !== null
+             && liveTreeData[found_index].fileValue !== devItem.fileValue)
+        {
+            // console.log("$ found_index, fileValue change: " + found_index);
+            editedItems.push({
+                id: devItem.id,
+                __isFolder: false,
+                devFileValue: devItem.fileValue,
+                // for file renaming display
+                devFileName: devItem.name,
+            });
+        }
+        // check if edit is a folder rename
+        else if(found_index !== -1 && liveTreeData[found_index].fileValue === null
+            && liveTreeData[found_index].name !== devItem.name)
+        {
+            // console.log("$ found index folder rename: " + found_index);
+            editedItems.push({
+                id: devItem.id,
+                __isFolder: true,
+                devFolderName: devItem.name,
+            });
+        }
+    });
+    // console.log("editedItems: "); console.log(editedItems);
 
-    try{
-        const [prod_obj, dev_obj] = await Promise.all([JSON.parse(prod_obj_str), JSON.parse(dev_obj_str)]);
-
-        // SYNC: loop through and find what exists
-        const dev_obj_filenames = dev_obj.map((item: any) => { return item.Filename; });
-        const prod_obj_filenames = prod_obj.map((item: any) => { return item.Filename; });
-
-        // SYNCED: items that exist in both => and include differences in entry{} values
-        var syncedItemsDiffentEntry = new Array();
-        dev_obj.map((item: Item) => {
-            // find filenames that exist in both objs && differnence in entry
-            let found_index = prod_obj_filenames.indexOf(item.Filename);
-            if(found_index !== -1 && prod_obj[found_index].Entry !== item.Entry)
-            syncedItemsDiffentEntry.push({ 
-                    Filename: item.Filename,
-                    dev_entry: item.Entry,
-                    prod_entry: prod_obj[found_index].Entry
-                });
-        });
-        // console.log("services.ts, syncedItemsDiffentEntry: "); console.log(syncedItemsDiffentEntry);
-
-        // NEW: if item inside dev_obj dne inside of prod_obj => is marked as a new entry
-        const newItems = dev_obj.filter((item: Item) => {
-            if(!prod_obj_filenames.includes(item.Filename))
+    // NEW: loop devTree and check if dne
+    const addedItems = devTreeData.filter((item: TreeData) => {
+        if(!liveTreeData.find(({ id }) => id == item.id))
             return item;
-        });
-        // console.log("newItems: "); console.log(newItems);
+    });
+    // console.log("addedItems: "); console.log(addedItems);
 
-        // DELETE: loop prod.Entry[] and if entry dne inside of dev.Entry[]
-        const deletedItems = prod_obj.filter((item: Item) => {
-            if(!dev_obj_filenames.includes(item.Filename))
-                return item;
-        });
-        // console.log("deletedItems"); console.log(deletedItems);
+    // DELETE: loop liveTree and check if dne
+    const deletedItems = liveTreeData.filter((item: TreeData) => {
+        if(!devTreeData.find(({ id }) => id == item.id))
+            return item;
+    });
+    // console.log("deletedItems: "); console.log(deletedItems);
+    
+    // else, return tree should contain differences: null
 
-        return(JSON.stringify({newItems, syncedItemsDiffentEntry, deletedItems}));
+    // if no changes were made, return for no change display
+    if(editedItems.length == 0 && addedItems.length == 0 && deletedItems.length == 0)
+    {
+        return -1;
     }
-    catch(error){
-        console.log("services.tsx getDifferenceEntries() error: " + error);
-        redirect("/404");
-    };
+
+    // todo: change markTree() to send editedItems, addedItems, and deletedItems
+    var differerenceTree = markTree(liveJSON, "Edited", editedItems)
+    differerenceTree = markTree(differerenceTree, "Added", addedItems);
+    differerenceTree = markTree(differerenceTree, "Deleted", deletedItems);
+
+    // console.log(JSON.stringify(differerenceTree, null, 4));
+
+    return differerenceTree;
 };
 
-const mergeAll = async(newItems: Items, syncedItemsDiffentEntry: SyncedItems, deletedItems: Items, currentVersion: number) => {
-    console.log("services.ts, inside mergeAll()! ");
+const mergeTree = async() => {
 
-    var item_type_index = "newItems";
     try{
-        newItems.map(async(item: Item) => {
-            await updateEntryDB(item.Filename, item.Entry, "production");
-            console.log(`successfully updated ${item.Filename}'s Item!`);
-        });
+        // get new highest version number
+        const request = await getLiveVersionDB(1);
+        const newHighestVersionNumber = Number(request.Item?.Entry) + 1;
+        console.log("$ mergeTree() newHighestVersionNumber: " + newHighestVersionNumber);
+
+        // get current development JSON from database to be merged
+        const devJSON = await getJSONData(0, "Development");
+        console.log("$ mergeTree() devJSON: "); console.log(devJSON);
+
+        // create entry in live db, containing new highest version number JSON
+        await writeJSONDataDB(newHighestVersionNumber, JSON.stringify(devJSON), "Live");
+
+        // update current version number in db
+        // aws database schema: keyValue, Key '0' (number) holds Live version (string)
+        await updateLiveVersionDB(0, newHighestVersionNumber);
+
+        // update highest version number in db
+        // aws database schema: keyValue, Key '-1' (number) hold *Highest Live version (string)
+        await updateLiveVersionDB(1, newHighestVersionNumber);
+
         revalidatePath("/merge");
-
-        item_type_index = "syncedItemsDiffentEntry";
-        syncedItemsDiffentEntry.map(async(item: SyncedItem) => {
-            await updateEntryDB(item.Filename, item.dev_entry, "production");
-            console.log(`successfully updated ${item.Filename}'s Item!`);
-        });
-        revalidatePath("/merge");
-
-        item_type_index = "deletedItems";
-        deletedItems.map(async(item: Item) => {
-            await deleteEntryDB(item.Filename, "production");
-            console.log(`successfully updated ${item.Filename}'s Item!`);
-        });
-        revalidatePath("/merge");
-
-        // update Live versioning DB
-        const items_prod_obj = await getItemsDB("production");
-        const items_prod_arr = items_prod_obj.Items;
-        const newVersion = currentVersion + 1;
-        var version_package = "[";
-
-        // iterate through LIVE db entries and build out return json
-        // todo - fix type ": any"
-        items_prod_arr?.map((item: any) => {
-            if(item.Filename == "VERSION")
-            {
-                item.Entry = newVersion.toString();
-            }
-            version_package += JSON.stringify(item) + ",";
-        });
-        version_package = version_package.substring(0, version_package.length - 1) + "]";
-        console.log("version_package: \n" + version_package);
-        console.log(JSON.parse(version_package));
-        
-        await updateConfigVersionsDB(newVersion, version_package);
-        revalidatePath("/versioning");
-
-        // update Live DB version # entry 
-        await updateEntryDB("VERSION", newVersion, "production");
-        revalidatePath("/merge");
-
-    }catch(error) {
-        console.log("services.ts ERROR handleMerge(), error: " + error);
-        console.log("services.ts ERROR handleMerge(), item_type_index: " + item_type_index);
+    }catch(error){
+        console.log("services.ts mergeTree() error: " + error);
         redirect("/404");
     };
 
-    console.log("end of mergeAll()");
 };
 
-export { getDifferenceEntries, getItemsDatabase, mergeAll, getCurrentLiveVersion};
+export { compareTrees, mergeTree };

@@ -1,11 +1,11 @@
 import React from "react";
-import styles from "./testingpage.module.css";
+import styles from "./itemspage.module.css";
 
 // services
 import { getDevelopmentJSONData } from "./services";
 import Folder from "./Folder/Folder";
 
-const TestingPage = async() => {
+const ItemsPage = async() => {
 
     const development_items = await getDevelopmentJSONData("development");
 
@@ -16,4 +16,4 @@ const TestingPage = async() => {
     )
 }
 
-export default TestingPage;
+export default ItemsPage;

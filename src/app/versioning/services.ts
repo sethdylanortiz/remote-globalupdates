@@ -1,6 +1,5 @@
 "use server";
 import { redirect } from "next/navigation";
-import { getVersion } from "../glabal_services/globalservices";
 
 // services
 import { updateLiveVersionDB } from "../lib/dynamodb";
@@ -8,9 +7,9 @@ import { updateLiveVersionDB } from "../lib/dynamodb";
 const revertVersion = async(newVersion: number) => {
 
     try{
-        await updateLiveVersionDB(newVersion);
+        await updateLiveVersionDB(0, newVersion);
     }catch(error){
-        console.log("services.ts getDevelopmentJSONData() error: " + error);
+        console.log("services.ts revertVersion() error: " + error);
         redirect("/404");
     };
 

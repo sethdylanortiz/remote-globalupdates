@@ -5,12 +5,14 @@ import { getLiveVersionDB, getJSONDataDB } from "../lib/dynamodb";
 const getVersion = async() => {
 
     try{
-        const request = await getLiveVersionDB();
+        const request = await getLiveVersionDB(0);
         
         if(request.Item)
         {
+            console.log("getVersion() request.Item: "); console.log(request.Item);
+
             const versionNumber = Number(request.Item.Entry);
-            console.log("GLOBAL SERVICES getVersion(), version: " + versionNumber + ", type: " + typeof versionNumber);
+            console.log("globalservices getVersion(), version: " + versionNumber + ", type: " + typeof versionNumber);
             return versionNumber;
         }
         
@@ -22,6 +24,7 @@ const getVersion = async() => {
     };
 };
 
+
 const getCurrentLiveJSONData = async() => {
     try{
         // get current version
@@ -32,20 +35,20 @@ const getCurrentLiveJSONData = async() => {
         
         return request.Item ? JSON.parse(request.Item.Entry) : redirect("/404");
     }catch(error){
-        console.log("services.ts getDevelopmentJSONData() error: " + error);
+        console.log("services.ts getCurrentLiveJSONData() error: " + error);
         redirect("/404");
     };
 };
 
+
 const getJSONData = async(versionNumber: number, tableType: string) => {
 
-    console.log("versionNumber: " + versionNumber + ", " + typeof versionNumber);
     try{
         const request = await getJSONDataDB(versionNumber, tableType);
         
         return request.Item ? JSON.parse(request.Item.Entry) : redirect("/404");
     }catch(error){
-        console.log("services.ts getDevelopmentJSONData() error: " + error);
+        console.log("services.ts getJSONData() error: " + error);
         redirect("/404");
     };
 };

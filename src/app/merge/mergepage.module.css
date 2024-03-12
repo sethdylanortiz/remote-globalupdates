@@ -1,70 +1,27 @@
 .container{
-    /* max-width: 1280px; */
-    width: 100%;
-    height: auto;
-
-    margin-left: auto;
-    margin-right: auto;
-}
-.header_section{
-    padding-top: 30px;
-    padding-bottom: 20px;
-    width: 100%;
-    background-color: #FFFFFF;
-
-    align-items: center;
-    justify-content: center;
-
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.6);
-}
-.header_text{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: left;
+    max-width: 90%;
     margin: auto;
-
-    width: 90%;
-    font-weight: 400;
-    color: black;
-}
-
-.no_changes_message_container{
-    width: 100%;
-    height: 50vh;
-
-    font-weight: 600;
-    font-size: 20px;
-    text-align: center;
-    color: #8c8c8c;
+    margin-top: 15px;
+    margin-bottom: 15px;
     
-    padding-top: 5%;
-}
-.cards_container{
-    width: 90%;
-    /* align-items: center; */
-    justify-content: center;
-
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    gap: 20px;
-}
-
-.merge_button_container{
-    margin-top: 20px;
-    width: 100%;
-
-    display: flex;
     justify-content: right;
+
+    gap: 40px;
+    display: flex;
+    flex-direction: column;
+}
+.message{
+    width: 100%;
+    margin-top: 7%;
+    font-size: 19px;
+
+    text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
-/*
-@media (min-width: 768px) 
-{
-    .container {
-        padding-left: 5rem;
-        padding-right: 5rem;
-    }
+.link{
+    color: #4343CE;
+    font-weight: bold;
+    text-decoration: underline;
 }
-*/
