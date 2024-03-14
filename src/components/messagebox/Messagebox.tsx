@@ -1,6 +1,8 @@
 import React from 'react'
 import styles from "./messagebox.module.css";
 
+export type MessageType = "error" | "success" | "confirmation";
+
 const getTheme = (type: string) =>{
     // return [background-color, border-color]
     switch(type){
@@ -15,7 +17,7 @@ const getTheme = (type: string) =>{
     };
 }
 
-const Messagebox = ({type, message, buttons}: {type: string, message: any, buttons: any}) => {
+const Messagebox = ({type, message, buttons}: {type: MessageType, message: string, buttons: any}) => {
     return (
         <div className = {styles.background_opacity}> 
             <div className = {styles.container} 

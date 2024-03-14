@@ -1,43 +1,8 @@
-/* change to globals.css */
-/* to emulate maxwidthwrapper */
 .container{
-    /* max-width: 1280px; */
-    width: 100%;
-    height: auto;
-
-    margin-left: auto;
-    margin-right: auto;
-}
-.header_section{
-    padding-top: 30px;
-    padding-bottom: 20px;
-    width: 100%;
-    background-color: #FFFFFF;
-
-    align-items: center;
-    text-align: left;
-    padding-left: 5%;
-
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.6);
-}
-
-.add_Item_container{
-    width: 90%;
-    align-items: center;
-    justify-content: center;
-
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px
-}
-
-.no_items_db{
-    width: 100%;
-
-    font-weight: 600;
-    font-size: 20px;
-    text-align: center;
-    color: #8c8c8c;
+    max-width: 90%;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
     
-    padding-top: 3%;
+    justify-content: right;
 }
