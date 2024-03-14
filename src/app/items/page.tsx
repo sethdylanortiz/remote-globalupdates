@@ -1,67 +1,17 @@
-/* 
-key: filename, value: string object
-
-to-do:
-- fetch aws by chunks of 5 entries, getting filenames and their strings/values
-- cache?
-- onclick, open cached filename's values - formatted json ready for edit + json schema checking
-- on change submit - push to dev database and overwrite cache
-- on merge tab, show all changes from current dev version agaisnt production version
-*/
 import React from "react";
-import styles from "./page.module.css";
-import fetch from "node-fetch";
-import Entry from "@/components/entry/Entry"; 
-import Button from "@/components/button/Button";
+import styles from "./itemspage.module.css";
+
+// services
+import { getDevelopmentJSONData } from "./services";
+import Folder from "./Folder/Folder";
 
 const ItemsPage = async() => {
 
-    const getEntryData = async() => {
-    
-        // add try-catch
-        const response_obj = await fetch("http://localhost:3000/api/getEntries", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-        });
+    const development_items = await getDevelopmentJSONData("development");
 
-        // console.log("\n" + "page.tsx getEntryData() response_obj: " + response_obj);
-        // add to set vars - global
-        return response_obj;
-    }
-
-    // on page load
-    const testing_ret_obj = await getEntryData();
-    const {entries_obj}: any = await testing_ret_obj.json();
-    // console.log("page.tsx testing_ret_obj: " + entries_obj);
-    
-    // console.log("page.tsx entries_obj.Items[0].entry: \n" + entries_obj.Items[0].entry);
-
-    return(
-        // to-do: move styles.container into globals.css
-        <div className = {styles.container}>
-            
-            <p>All Items</p>
-
-            <div className = {styles.items_container}>
-
-                {/* 
-                    todo -  change to another component that handles entire aws obj, do not use .map() here, 
-                            this solves multiple instances of <Entry> - fixes 'EDIT' button issue
-                */}
-                {entries_obj.Items.map((item: any) => 
-                        // console.log("\n" + "page.tsx Items.map(), item.FileName: "+ item.FileName);
-                        // console.log("page.tsx Items.map(), item.entry: \n" + item.entry);
-                        // console.log("page.tsx Items.map(), JSON.stringify(item): \n" + JSON.stringify(item));
-                        <Entry
-                            key = {item.FileName}
-                            obj_str = {JSON.stringify(item)}
-                        />
-                )}
-        
-            </div>
-
+    return (
+        <div className = {styles.container}> 
+            <Folder json = {development_items}/>
         </div>
     )
 }

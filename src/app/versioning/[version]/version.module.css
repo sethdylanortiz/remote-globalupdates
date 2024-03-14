@@ -1,0 +1,32 @@
+.container{
+    max-width: 90%;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    
+    justify-content: right;
+}
+
+.versionHeader{
+    height: auto;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 5%;
+    padding-right: 5%;
+
+    text-align: left;
+    background-color: white;
+    margin: auto;
+
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.6);
+}
+
+.versionHeader > p > span{
+    font-weight: 500;
+}

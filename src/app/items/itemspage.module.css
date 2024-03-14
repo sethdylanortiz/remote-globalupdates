@@ -1,0 +1,8 @@
+.container{
+    max-width: 90%;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    
+    justify-content: right;
+}

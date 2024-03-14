@@ -1,0 +1,57 @@
+/* move contianer background-color to globals.css */
+.container{
+    /* background-color: #EBEBEB; */
+    width: 100%;
+    height: auto;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    padding-top: 75px;
+    /* padding-bottom: 10px; */
+    top: 0;
+    bottom: 0;
+}
+.image_navigation_container{
+    width: 100%;
+
+    align-items: center;
+    justify-content: center;
+
+    display: flex;
+    flex-direction: row;
+
+    gap: 2.5%;
+}
+.selection{
+    background-color: white;
+    width: auto;
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.6);
+}
+.selection:hover{
+    filter: brightness(85%);
+}
+.link{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.image_container{
+    background-color: white;
+    padding-top: 75px;
+    padding-bottom: 50px;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+.button{
+    background-color: #498cf5;
+    width: 100%;
+    padding: 20px;
+
+    font-weight: 500;
+    color: white;
+    font-size: large;
+    text-align: center;
+}
