@@ -1,8 +1,4 @@
-/*
-aws sdk v3
-    Filename (pk): string
-    Entry: string
-*/
+"use server";
 import { DynamoDBClient, ReturnValue } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, ScanCommand, DeleteCommand} from '@aws-sdk/lib-dynamodb';
 
@@ -13,8 +9,53 @@ const database_client = new DynamoDBClient({
         secretAccessKey: process.env.SECRET_ACCESS_KEY
     }
 });
-
 const doc_client = DynamoDBDocumentClient.from(database_client);
+
+// for user credential login
+const getUserDB = (email, password) => {
+// const getUserDB = async(email, password) => {
+/*
+✓ Compiled in 300ms (1199 modules)
+    dynamodb.js, reqeust: 
+    {
+        '$metadata': {
+            httpStatusCode: 200,
+            requestId: 'AN4G5ST9O4VU75J1MUUJL364N3VV4KQNSO5AEMVJF66Q9ASUAAJG',
+            extendedRequestId: undefined,
+            cfId: undefined,
+            attempts: 1,
+            totalRetryDelay: 0
+        }
+    }
+✓ Compiled in 243ms (1199 modules)
+    dynamodb.js, reqeust:
+    {
+        '$metadata': {
+            httpStatusCode: 200,
+            requestId: 'MTHL3GFO7T2Q6V62OCP6PT4HJVVV4KQNSO5AEMVJF66Q9ASUAAJG',
+            extendedRequestId: undefined,
+            cfId: undefined,
+            attempts: 1,
+            totalRetryDelay: 0
+        },
+        Item: { email: 'robloxdontyoucare@gmail.com', password: 'Pizza1001' }
+    }
+*/
+
+    const params = {
+        TableName: process.env.TABLE_NAME_CREDENTIALS,
+        Key: {
+            email: email,
+            password: password
+        }
+    };
+
+    return doc_client.send(new GetCommand(params));
+    // const request = await doc_client.send(new GetCommand(params));
+    // console.log("dynamodb.js, request: ");
+    // console.log(request);
+    // request.Item? console.log("found!: " + request.Item) : console.log("account not found");
+}; 
 
 const getLiveVersionDB = (version) => {
     
@@ -91,6 +132,5 @@ const updateLiveVersionDB = (versionKey, newVersion) => {
     return doc_client.send(new UpdateCommand(params));
 };
 
-// todo: clean up these returns
-export { getConfigVersionsDB, getLiveVersionDB,
+export { getUserDB, getConfigVersionsDB, getLiveVersionDB,
      getJSONDataDB, writeJSONDataDB, updateLiveVersionDB }

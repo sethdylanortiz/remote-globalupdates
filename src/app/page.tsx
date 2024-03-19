@@ -7,7 +7,9 @@ import Image from "next/image";
 import image_itemsPage from "../../public/image-development.png";
 import image_mergePage from "../../public/image-production.png";
 
-export default function Home() {
+// todo, make this a login page
+const HomePage = () => {
+
     return (
         <div className = {styles.container}>
             
@@ -45,3 +47,5 @@ export default function Home() {
         </div>
     )
 }
+
+export default HomePage;
